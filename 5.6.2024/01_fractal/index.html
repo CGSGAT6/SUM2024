@@ -1,0 +1,25 @@
+<!DOCKTYPE html>
+<html lang="ru" class="notranslate" translate="no">
+  <head>
+    <meta name="google" content="notranslate"> 
+    <title> Test page </title>
+    <meta charset="utf-8"/>
+  </head>
+  <body>
+    <canvas id="mainCanvas" width="1000px" height="1000px" style="border: 2px solid red"></canvas>
+    <script type="module">
+      import * as vigl from "./fraclib.js"
+      window.addEventListener("load", () => {
+        vigl.initGL();
+        const draw = () => {
+          // drawing
+          vigl.render();
+ 
+          // animation register
+          window.requestAnimationFrame(draw);
+        };
+        draw();
+      });
+    </script>
+  </body>
+</html>

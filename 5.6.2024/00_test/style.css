@@ -1,0 +1,31 @@
+img
+{
+  border: 20px;
+  border-radius: 20px;
+  border-color: aquamarine;
+  width: 300px;
+}
+
+img#myid
+{
+  border-radius: 40px;
+  border-color:chocolate;
+  height: 200px;
+}
+
+img:hover
+{
+  border-radius: 50px;
+}
+
+td
+{
+  font-family: 'Courier New', Courier, monospace;
+}
+
+table.supertable
+{
+  border: 2px;
+  border-radius: 1px;
+  background-color: azure;
+}
