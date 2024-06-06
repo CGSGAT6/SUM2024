@@ -2,6 +2,17 @@ let
   canvas,
   gl,
   timeLoc,
+  lastShift = false,
+  mouseStart = [0.0, 0.0],
+  mouseEnd = [1000.0, 1000.0],
+  mouseStartLoc,
+  mouseEndLoc,
+  mse = [0.0, 0.0],
+  mee = [1000.0, 1000.0],
+  canW = 1000,
+  canwLoc,
+  d = 1000,
+  dLoc,
   x = 0;
 
 export function initGL() {
@@ -9,7 +20,8 @@ export function initGL() {
   gl = canvas.getContext("webgl2");
 
   gl.clearColor(0.30, 0.47, 0.8, 1);
-  // shadersss
+
+  // shaders
   let vs_txt = 
   `#version 300 es
   precision highp float;
@@ -17,11 +29,48 @@ export function initGL() {
 
   out vec2 DrawPos;
   uniform float Time;
+  uniform vec2 MouseStart;
+  uniform vec2 MouseEnd;
+  uniform float CanW;
+  uniform float Dem;
+
+  float my_mod( float a, float b )
+  {
+    float n = floor(a / b);
+
+    return a - n * b;
+  }
 
   void main( void )
   {
-    gl_Position = vec4(InPosition, 1);
+  /*
+    float dx = abs(MouseStart.x - MouseEnd.x);
+    float dy = abs(MouseStart.y - MouseEnd.y);
+    float d = max(dx, dy);
+
+    vec2 pos;
+
+    vec2 c = (min(MouseStart, MouseEnd) + d / 2.0 - CanW / 2.0) * 2.0;
+    
+    pos = c + InPosition.xy * d;
+    pos /= CanW;
+    pos.y *= -1.0;
+    */
+    /*
+    vec2 c = min(MouseStart, MouseEnd) + d / 2.0;
+    
+    pos = c + InPosition.xy * d / 2.0 * d / d1;
+    pos /= CanW / 2.0;
+    pos -= 1.0;
+    pos.y *= -1.0;
+    */
+    //DrawPos = pos;
+    //DrawPos = vec2(0) + vec2(0.3) * InPosition.xy;
     DrawPos = InPosition.xy;
+    gl_Position = vec4(DrawPos, 0, 1);
+    gl_Position = vec4(InPosition.xy, 0, 1);
+    //DrawPos = (InPosition.xy) / (my_mod(Time, 20.0));
+    //DrawPos = InPosition.xy;
   }
   `;
 
@@ -30,26 +79,60 @@ export function initGL() {
   precision highp float;
   
   uniform float Time;
+  uniform vec2 MouseStart;
+  uniform vec2 MouseEnd;
 
   in vec2 DrawPos;
   out vec4 OutColor;
+
+  int Julia( vec2 P, vec2 C )
+  {
+    vec2 b = P, b1;
+    int n;
+
+    for (n = 0; n <= 255 && length(b) < 2.0; n++)
+      {
+        b1 = b;
+        b.x = b1.x * b1.x - b1.y * b1.y;
+        b.y = 2.0 * b1.x * b1.y;
+        
+        b += C;
+      }
+
+    return n;
+  }
+
+  int Mandl( vec2 P )
+  {
+    vec2 b = P, b1, b0 = P;
+    int n;
+
+    for (n = 0; n <= 255 && length(b) < 2.0; n++)
+      {
+        b1 = b;
+        b.x = b1.x * b1.x - b1.y * b1.y;
+        b.y = 2.0 * b1.x * b1.y;
+        
+        b += P;
+      }
+
+    return n;
+  }
 
   void main( void )
   {
 
     int n, tmp;
-    vec2 b = DrawPos, b1;
 
-    for (n = 0; n <= 255 && length(b) < 2.0; n++)
-    {
-      b1 = b;
-      b.x = b1.x * b1.x - b1.y * b1.y;
-      b.y = 2.0 * b1.x * b1.y;
-      
-      b += sin(Time) / 2.0;
-    }
-    OutColor = vec4(float(n) / 255.0, 0.0 * float(n) / 255.0, float(n) / 510.0, 1);
-    //OutColor = vec4(1.0 * sin(DrawPos.x * 8.0 + Time * 5), abs(sin(Time) * DrawPos.y, 0, 1));
+    //n = Julia(DrawPos, vec2(0.35, 0.39));
+    //n = Julia(DrawPos, vec2(sin(Time) * 0.5, cos(Time ) * -0.33));
+    n = Julia(DrawPos, vec2(0.35, 0.39) + vec2(sin(Time) / 47.0, cos(Time) * 0.47));
+    //n = Mandl(DrawPos);
+    //n = Julia(DrawPos, vec2(sin(MouseStart / 1000.0)));
+
+    OutColor = vec4(float(n) / 255.0, float(n) / 150.0, float(n) / 100.0, 1);
+    //OutColor = vec4(1.0, 1.0, sin(Time), 1);
+    //OutColor = vec4(floor(DrawPos.yx * 10.0) / 10.0, 0, 1);
   }
   `;
 
@@ -82,6 +165,10 @@ export function initGL() {
   // uniform data
 
   timeLoc = gl.getUniformLocation(prg, "Time");
+  dLoc = gl.getUniformLocation(prg, "Dem");
+  mouseStartLoc = gl.getUniformLocation(prg, "MouseStart");
+  mouseEndLoc = gl.getUniformLocation(prg, "MouseEnd");
+  canwLoc = gl.getUniformLocation(prg, "CanW");
 
   gl.useProgram(prg);
 }
@@ -99,8 +186,23 @@ export function render() {
  
     gl.uniform1f(timeLoc, t);
   }
+  if (mouseStartLoc != -1 && mouseEndLoc != -1)
+  {
+    gl.uniform2fv(mouseStartLoc, new Float32Array(mse));
+    gl.uniform2fv(mouseEndLoc, new Float32Array(mee));
+  }
+  if (canwLoc != -1) {
+    let can = document.getElementById("mainCanvas");
+    canW = can.clientWidth;
+
+    gl.uniform1f(canwLoc, canW);
+  }
+  if (dLoc != -1)
+    gl.uniform1f(dLoc, d);
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
 } // End of 'render' function
+
+//new Float32Array(vertexes)
 
 // Load and compile shader function
 function loadShader(shaderType, shaderSource) {
@@ -113,3 +215,56 @@ function loadShader(shaderType, shaderSource) {
   }                                            
   return shader;
 } // End of 'loadShader' function
+
+export function mouseDown(event) {
+  console.log("down");
+
+  if (lastShift == false)
+  {
+    d = Math.max(Math.abs(mse.x - mee.x), Math.abs(mse.y - mee.y));
+    mouseStart = [event.offsetX, event.offsetY];
+    console.log("start");
+    lastShift = true;    
+  }
+  /*
+  if (event.shiftKey == true && lastShift == false) {
+    mouseStart = [event.clientX, event.clientY];
+    console.log("start");
+    lastShift = true;
+  }
+  else if (event.shiftKey == false && lastShift == true) {
+    mouseEnd = [event.clientX, event.clientY];
+    console.log("end");
+    lastShift = false;
+    mse = mouseStart;
+    mee = mouseEnd;
+  }
+  */
+}
+
+export function mouseUp(event) {
+  console.log("up");
+
+  if (lastShift == true)
+  {
+    mouseEnd = [event.offsetX, event.offsetY];
+    console.log("end");
+    lastShift = false; 
+    mse = mouseStart;
+    mee = mouseEnd;   
+  }
+  /*
+  if (event.shiftKey == true && lastShift == false) {
+    mouseStart = [event.clientX, event.clientY];
+    console.log("start");
+    lastShift = true;
+  }
+  else if (event.shiftKey == false && lastShift == true) {
+    mouseEnd = [event.clientX, event.clientY];
+    console.log("end");
+    lastShift = false;
+    mse = mouseStart;
+    mee = mouseEnd;
+  }
+  */
+}

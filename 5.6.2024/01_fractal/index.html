@@ -20,6 +20,17 @@
         };
         draw();
       });
+
+      let can = document.getElementById("mainCanvas");
+
+      can.addEventListener("mousedown", (event) => {
+        vigl.mouseDown(event);
+        //console.log(event);
+      })
+      can.addEventListener("mouseup", (event) => {
+        vigl.mouseUp(event);
+        //console.log(event);
+      })
     </script>
   </body>
 </html>
