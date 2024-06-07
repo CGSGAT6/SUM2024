@@ -1,20 +1,26 @@
 <!DOCKTYPE html>
 <html lang="ru" class="notranslate" translate="no">
   <head>
-    <meta name="google" content="notranslate"> 
-    <title> Test page </title>
-    <meta charset="utf-8"/>
+    <meta name="google" content="notranslate" />
+    <link rel="icon" href="A.png">
+    <title>Test page</title>
+    <meta charset="utf-8" />
   </head>
   <body>
-    <canvas id="mainCanvas" width="1000px" height="1000px" style="border: 2px solid red"></canvas>
+    <canvas
+      id="mainCanvas"
+      width="1000px"
+      height="1000px"
+      style="border: 2px solid red"
+    ></canvas>
     <script type="module">
-      import * as vigl from "./fraclib.js"
+      import * as vigl from "./fraclib.js";
       window.addEventListener("load", () => {
         vigl.initGL();
         const draw = () => {
           // drawing
           vigl.render();
- 
+
           // animation register
           window.requestAnimationFrame(draw);
         };
@@ -26,11 +32,16 @@
       can.addEventListener("mousedown", (event) => {
         vigl.mouseDown(event);
         //console.log(event);
-      })
+      });
       can.addEventListener("mouseup", (event) => {
         vigl.mouseUp(event);
         //console.log(event);
-      })
+      });
+
+      can.addEventListener("mousemove", (event) => {
+        vigl.mouseMove(event);
+        //console.log(event);
+      });
     </script>
   </body>
 </html>
