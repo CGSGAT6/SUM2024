@@ -80,6 +80,40 @@ class _vec3 {
   normalize() {
     return this.divNum(this.len());
   } // End of 'normalize' function
+
+  // Vector setting normalize function
+  setNormalize() {
+    let l = this.len();
+
+    this.x /= l;
+    this.y /= l;
+    this.z /= l;
+  } // End of 'normalize' function
+
+  // Vector transform by matrix function
+  vectorTransform(a)
+  {
+    return vec3(this.x * a.m[0][0] + this.y * a.m[1][0] + this.z * a.m[2][0],
+                this.x * a.m[0][1] + this.y * a.m[1][1] + this.z * a.m[2][1],
+                this.x * a.m[0][2] + this.y * a.m[1][2] + this.z * a.m[2][2]);
+  } // End of 'vectorTransform' function
+
+  // Vector multiplue by matrix function
+  mulMatr(m)
+  {
+    let w = this.x * a.m[0][3] + this.y * a.m[1][3] + this.z * a.m[2][3] + a.m[3][3];
+  
+    return vec3((this.x * a.m[0][0] + this.y * a.m[1][0] + this.z * a.m[2][0] + a.m[3][0]) / w,
+                  (this.x * a.m[0][1] + this.y * a.m[1][1] + this.z * a.m[2][1] + a.m[3][1]) / w,
+                  (this.x * a.m[0][2] + this.y * a.m[1][2] + this.z * a.m[2][2] + a.m[3][2]) / w);
+  } // End of 'mulMatr' function
+
+  pointTransform(m)
+  {
+    return vec3(this.x * a.m[0][0] + this.y * a.m[1][0] + this.z * a.m[2][0] + a.m[3][0],
+              this.x * a.m[0][1] + this.y * a.m[1][1] + this.z * a.m[2][1] + a.m[3][1],
+              this.x * a.m[0][2] + this.y * a.m[1][2] + this.z * a.m[2][2] + a.m[3][2]);
+  } // End of 'pointTransform' function
 }
 
 // Vector setting function

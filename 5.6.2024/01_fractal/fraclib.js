@@ -125,7 +125,7 @@ export function initGL() {
 
     //n = Julia(DrawPos, vec2(0.35, 0.39));
     //n = Julia(DrawPos, vec2(sin(Time) * 0.5, cos(Time ) * -0.33));
-    n = Julia(DrawPos, vec2(0.35, 0.39) + vec2(sin(Time / 10.0) / 47.0, cos(Time / 10.0) * 0.47));
+    n = Julia(DrawPos, vec2(0.35, 0.39) + vec2(sin(Time / 10.0 * 2.0) / 47.0, cos(Time / 10.0 * 2.0) * 0.47));
     //n = Mandl(DrawPos);
     //n = Julia(DrawPos, vec2(sin(MouseStart / 1000.0)));
 

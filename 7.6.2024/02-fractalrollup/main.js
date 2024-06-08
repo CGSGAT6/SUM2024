@@ -145,12 +145,12 @@ export function initGL() {
 
     //n = Julia(DrawPos, vec2(0.35, 0.39));
     //n = Julia(DrawPos, vec2(sin(Time) * 0.5, cos(Time ) * -0.33));
-    n = Julia(DrawPos, vec2(0.35, 0.39) + vec2(sin(Time) / 47.0, cos(Time) * 0.47));
+    n = Julia(DrawPos, vec2(0.35, 0.39) + vec2(sin(Time) * cos(Time / 2.0) / 47.0, cos(Time) * sin(Time * 2.0) * 0.47));
     //n = Mandl(DrawPos);
     //n = Julia(DrawPos, vec2(sin(MouseStart / 1000.0)));
 
-    OutColor = vec4(6.0 / (float(n) + 0.0), 7.0 / (float(n) + 0.0), 8.0 / (float(n) + 0.0), 1);
-    //OutColor = vec4(float(n) / 255.0, float(n) / 150.0, float(n) / 100.0, 1);
+    //OutColor = vec4(6.0 / (float(n) + 0.0), 7.0 / (float(n) + 0.0), 8.0 / (float(n) + 0.0), 1);
+    OutColor = vec4(float(n) / 255.0, float(n) / 150.0, float(n) / 100.0, 1);
     //OutColor = vec4(1.0, 1.0, sin(Time), 1);
     //OutColor = vec4(floor(DrawPos.yx * 10.0) / 10.0, 0, 1);
   }
