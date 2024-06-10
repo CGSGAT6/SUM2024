@@ -366,10 +366,10 @@ class _mat4 {
       Right = Dir.cross(Up1).normalize(),
       Up = Right.cross(Dir).normalize();
     
-    return mat4(Right.X, Up.X, -Dir.X, 0,
-                 Right.Y, Up.Y, -Dir.Y, 0,
-                 Right.Z, Up.Z, -Dir.Z, 0,
-                 -Vec3DotVec3(Loc, Right), -Vec3DotVec3(Loc, Up), Vec3DotVec3(Loc, Dir), 1);
+    return mat4(Right.x, Up.x, -Dir.x, 0,
+                 Right.y, Up.y, -Dir.y, 0,
+                 Right.z, Up.z, -Dir.z, 0,
+                 -Loc.dot(Right), -Loc.dot(Up), Loc.dot(Dir), 1);
   }
 
   setView(Loc, At, Up1) {
@@ -380,18 +380,18 @@ class _mat4 {
     
     this.m =
     [
-      [Right.X, Up.X, -Dir.X, 0],
-      [Right.Y, Up.Y, -Dir.Y, 0],
-      [Right.Z, Up.Z, -Dir.Z, 0],
-      [-Vec3DotVec3(Loc, Right), -Vec3DotVec3(Loc, Up), Vec3DotVec3(Loc, Dir), 1]
+      [Right.x, Up.x, -Dir.x, 0],
+      [Right.y, Up.y, -Dir.y, 0],
+      [Right.z, Up.z, -Dir.z, 0],
+      [-Loc.dot(Right), -Loc.dot(Up), Loc.dot(Dir), 1]
     ];
   }
 
   frustum(left, right, bottom, top, near, far) {
     return mat4((2 * near) / (right - left), 0, 0, 0,
-                    0, (2 * near) / (top - bottom), 0, 0,
-                    (right + left) / (right - left), (top + bottom) / (top - bottom), (-((far + near) / (far - near))), (-1),
-                    0, 0, (-((2 * near * far) / (far - near))), 0);
+                 0, (2 * near) / (top - bottom), 0, 0,
+                 (right + left) / (right - left), (top + bottom) / (top - bottom), (-((far + near) / (far - near))), (-1),
+                 0, 0, (-((2 * near * far) / (far - near))), 0);
   }
 
   setFrustum(left, right, bottom, top, near, far) {
@@ -404,11 +404,11 @@ class _mat4 {
     ];
   }
 
-  transpose(a) {
-    return mat4(a.m[0][0], a.m[1][0], a.m[2][0], a.m[3][0],
-                a.m[0][1], a.m[1][1], a.m[2][1], a.m[3][1],
-                a.m[0][2], a.m[1][2], a.m[2][2], a.m[3][2],
-                a.m[0][3], a.m[1][3], a.m[2][3], a.m[3][3]);
+  transpose() {
+    return mat4(this.m[0][0], this.m[1][0], this.m[2][0], this.m[3][0],
+      this.m[0][1], this.m[1][1], this.m[2][1], this.m[3][1],
+      this.m[0][2], this.m[1][2], this.m[2][2], this.m[3][2],
+      this.m[0][3], this.m[1][3], this.m[2][3], this.m[3][3]);
   }
 
   setTranspose() {
@@ -439,7 +439,7 @@ class _mat4 {
       [0, co, si, 0],
       [0, -si, co, 0],
       [0, 0, 0, 1]
-    ];
+    ];  
   }
 
   rotateY(angleInDegree) {

@@ -50,7 +50,7 @@ class _vec3 {
 
   // Vector dot product function
   dot(vec) {
-    return vec3(this.x * vec.x, this.y * vec.y, this.z * vec.z);
+    return this.x * vec.x + this.y * vec.y + this.z * vec.z;
   } // End of 'dot' function
 
   // Vector cross product function

@@ -1,4 +1,7 @@
-class camera {
+import { mat4 } from "../math/mat4.js"
+import { vec3 } from "../math/vec3.js"
+
+class _camera {
   loc;   /* Camera location */
   at;    /* Camera look-at point */
   dir;   /* Camera direction */
@@ -18,6 +21,18 @@ class camera {
   projDist;    /* Distance to project plane from viewer (near) */
   projFarClip; /* Distance to project for clip plane (far) */
 
+  constructor() {
+    this.matrProj = mat4();
+    this.matrView = mat4();
+    this.matrVP = mat4();
+
+    this.frameH = 1000;
+    this.frameW = 1000;
+
+    this.projDist = 0.10;
+    this.projFarClip = 300;
+    this.projSize = 0.1;
+  }
   set(loc, at, up)
   {
     this.matrView.setView(loc, at, up);
@@ -61,6 +76,10 @@ class camera {
   {
     this.frameW = frameW;
     this.frameH = frameH;
-    this.setProj(projSize, projDist, projFarClip);
+    this.setProj(this.projSize, this.projDist, this.projFarClip);
   } // End of 'setSize' function
+}
+
+export function camera(){
+  return new _camera();
 }

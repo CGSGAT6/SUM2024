@@ -1,9 +1,9 @@
 // -------------------------------------------------
 class _shader {
   glDrawingContext;
+  name;
 
-  async _init(name) {
-    this.name = name;
+  async create() {
     this.id = null;
     this.shaders =
     [
@@ -21,7 +21,7 @@ class _shader {
        }
     ];
     for (const s of this.shaders) {
-      let response = await fetch(`bin/shaders/${name}/${s.name}.glsl`);
+      let response = await fetch(`bin/shaders/${this.name}/${s.name}.glsl`);
       let src = await response.text();
       if (typeof src == "string" && src != "")
         s.src = src;
@@ -72,7 +72,7 @@ class _shader {
         loc: this.glDrawingContext.getAttribLocation(this.id, info.name),
       };
     }
-
+    
     // Shader uniforms
     this.uniforms = {};
     const countUniforms = this.glDrawingContext.getProgramParameter(this.id, this.glDrawingContext.ACTIVE_UNIFORMS);
@@ -104,15 +104,15 @@ class _shader {
  
   constructor(name, rndObj) {
     this.glDrawingContext = rndObj.gl;
-    this._init(name)
+    this.name = name;
   }
  
   apply() {
     if (this.id != null)
-      this.drawingContext.useProgram(this.id);
+      this.glDrawingContext.useProgram(this.id);
   }
 }
 
 export function shader(name, rndObj) {
- return new _shader(name, rndObj);
+  return new _shader(name, rndObj);
 }

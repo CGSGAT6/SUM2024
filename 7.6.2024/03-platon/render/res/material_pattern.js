@@ -3,6 +3,7 @@ import { shader } from "./shaders";
 class _materialPattern {
   shd;
   name;
+  shdName;
   vertexAttribArray;
 
   constructor(name, shdName, rndObj) {
