@@ -10,14 +10,26 @@ class _prim {
   constructor(mtlPtn, type, vertexes, indexes) {
     let gl = mtlPtn.shd.glDrawingContext;
 
-    this.type = type;
+    if (type == "triangles")
+      this.type = mtlPtn.shd.glDrawingContext.TRIANGLES;
+    else if (type == "triangle strip")
+      this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_STRIP;
+    else if (type == "line strip")
+      this.type = mtlPtn.shd.glDrawingContext.LINE_STRIP;
+    else if (type == "triangle fun")
+      this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_FUN;
+    else
+      this.type = mtlPtn.shd.glDrawingContext.POINTS;
+    
+    const vertFormat = mtlPtn.vertexFormat;  
+      /*
 
     let vertFormat = [
       {name : "Position",
        size : 12},
       {name : "Normal",
        size : 12}
-      ];
+      ];*/
     let vertSize = 24;
 
     this.noofV = vertexes.length / (vertSize / 4);

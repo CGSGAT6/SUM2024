@@ -1,5 +1,4 @@
-let
-  canvas,
+let canvas,
   gl,
   timeLoc,
   lastShift = false,
@@ -15,17 +14,20 @@ let
   dLoc,
   corner = [0, 0],
   cornerLoc,
+  mode = "def",
+  center = [500, 500],
+  centerLoc,
+  newCenter = [500, 500],
   x = 0;
 
 export function initGL() {
-  canvas = document.getElementById("myCan");
+  canvas = document.getElementById("mainCanvas");
   gl = canvas.getContext("webgl2");
 
-  gl.clearColor(0.30, 0.47, 0.8, 1);
+  gl.clearColor(0.3, 0.47, 0.8, 1);
 
   // shaders
-  let vs_txt = 
-  `#version 300 es
+  let vs_txt = `#version 300 es
   precision highp float;
   in vec3 InPosition;
 
@@ -59,33 +61,12 @@ export function initGL() {
 
     vec2 c = (min(Ms, Me) + d / 2.0 - CanW / 2.0) * 2.0;
     
-    pos = c + InPosition.xy * d;
+    pos = c + InPosition.xy * d * vec2(1, -1);
     pos /= CanW;
     pos.y *= -1.0;
-  /*
-    float dx = abs(MouseStart.x - MouseEnd.x);
-    float dy = abs(MouseStart.y - MouseEnd.y);
-    float d = max(dx, dy);
-
-    vec2 pos;
-
-    vec2 c = (min(MouseStart, MouseEnd) + d / 2.0 - CanW / 2.0) * 2.0;
-    
-    pos = c + InPosition.xy * d;
-    pos /= CanW;
-    pos.y *= -1.0;
-    */
-    /*
-    vec2 c = min(MouseStart, MouseEnd) + d / 2.0;
-    
-    pos = c + InPosition.xy * d / 2.0 * d / d1;
-    pos /= CanW / 2.0;
-    pos -= 1.0;
-    pos.y *= -1.0;
-    */
     DrawPos = pos;
     //DrawPos = vec2(0) + vec2(0.3) * InPosition.xy;
-    DrawPos = InPosition.xy;
+    //DrawPos = InPosition.xy;
     //gl_Position = vec4(DrawPos, 0, 1);
     gl_Position = vec4(InPosition.xy, 0, 1);
     //DrawPos = (InPosition.xy) / (my_mod(Time, 20.0));
@@ -93,8 +74,7 @@ export function initGL() {
   }
   `;
 
-  let fs_txt = 
-  `#version 300 es
+  let fs_txt = `#version 300 es
   precision highp float;
   
   uniform float Time;
@@ -145,19 +125,18 @@ export function initGL() {
 
     //n = Julia(DrawPos, vec2(0.35, 0.39));
     //n = Julia(DrawPos, vec2(sin(Time) * 0.5, cos(Time ) * -0.33));
-    n = Julia(DrawPos, vec2(0.35, 0.39) + vec2(sin(Time) * cos(Time / 2.0) / 47.0, cos(Time) * sin(Time * 2.0) * 0.47));
+    n = Julia(DrawPos, vec2(0.35, 0.39) + vec2(sin(Time / 10.0 * 2.0) / 47.0, cos(Time / 10.0 * 2.0) * 0.47));
     //n = Mandl(DrawPos);
     //n = Julia(DrawPos, vec2(sin(MouseStart / 1000.0)));
 
-    //OutColor = vec4(6.0 / (float(n) + 0.0), 7.0 / (float(n) + 0.0), 8.0 / (float(n) + 0.0), 1);
-    OutColor = vec4(float(n) / 255.0, float(n) / 150.0, float(n) / 100.0, 1);
+    OutColor = vec4(6.0 / (float(n) + 0.0), 7.0 / (float(n) + 0.0), 8.0 / (float(n) + 0.0), 1);
+    //OutColor = vec4(float(n) / 255.0, float(n) / 150.0, float(n) / 100.0, 1);
     //OutColor = vec4(1.0, 1.0, sin(Time), 1);
     //OutColor = vec4(floor(DrawPos.yx * 10.0) / 10.0, 0, 1);
   }
   `;
 
-  let 
-    vs = loadShader(gl.VERTEX_SHADER, vs_txt),
+  let vs = loadShader(gl.VERTEX_SHADER, vs_txt),
     fs = loadShader(gl.FRAGMENT_SHADER, fs_txt),
     prg = gl.createProgram();
 
@@ -165,13 +144,26 @@ export function initGL() {
   gl.attachShader(prg, fs);
   gl.linkProgram(prg);
 
-  if(!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
+  if (!gl.getProgramParameter(prg, gl.LINK_STATUS)) {
     let buf = gl.getProgramInfoLog(prg);
     console.log("Program link fail" + buf);
   }
   // vertex buffer
   const size = 1;
-  const vertexes = [-size, size, 0, -size, -size, 0, size, size, 0, size, -size, 0];
+  const vertexes = [
+    -size,
+    size,
+    0,
+    -size,
+    -size,
+    0,
+    size,
+    size,
+    0,
+    size,
+    -size,
+    0,
+  ];
   const posLoc = gl.getAttribLocation(prg, "InPosition");
   let vertexArray = gl.createVertexArray();
   gl.bindVertexArray(vertexArray);
@@ -190,6 +182,7 @@ export function initGL() {
   mouseEndLoc = gl.getUniformLocation(prg, "MouseEnd");
   canwLoc = gl.getUniformLocation(prg, "CanW");
   cornerLoc = gl.getUniformLocation(prg, "Corner");
+  centerLoc = gl.getUniformLocation(prg, "centerLoc");
 
   gl.useProgram(prg);
 }
@@ -198,28 +191,27 @@ export function initGL() {
 export function render() {
   //console.log(`Frame ${x++}`);
   gl.clear(gl.COLOR_BUFFER_BIT);
-                                               
+
   if (timeLoc != -1) {
     const date = new Date();
-    let t = date.getMinutes() * 60 +
-            date.getSeconds() +
-            date.getMilliseconds() / 1000;
- 
+    let t =
+      date.getMinutes() * 60 +
+      date.getSeconds() +
+      date.getMilliseconds() / 1000;
+
     gl.uniform1f(timeLoc, t);
   }
-  if (mouseStartLoc != -1 && mouseEndLoc != -1)
-  {
+  if (mouseStartLoc != -1 && mouseEndLoc != -1) {
     gl.uniform2fv(mouseStartLoc, new Float32Array(mse));
     gl.uniform2fv(mouseEndLoc, new Float32Array(mee));
   }
   if (canwLoc != -1) {
-    let can = document.getElementById("myCan");
+    let can = document.getElementById("mainCanvas");
     canW = can.clientWidth;
 
     gl.uniform1f(canwLoc, canW);
   }
-  if (dLoc != -1 && lastShift == false)
-    gl.uniform1f(dLoc, d);
+  if (dLoc != -1 && lastShift == false) gl.uniform1f(dLoc, d);
   if (cornerLoc != -1 && lastShift == false)
     gl.uniform2fv(cornerLoc, new Float32Array(corner));
   gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
@@ -234,22 +226,29 @@ function loadShader(shaderType, shaderSource) {
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
     let buf = gl.getShaderInfoLog(shader);
-    console.log('Shader compile fail: ' + buf);
-  }                                            
+    console.log("Shader compile fail: " + buf);
+  }
   return shader;
 } // End of 'loadShader' function
 
-function mouseDown(event) {
+export function mouseDown(event) {
   console.log("down");
 
-  if (lastShift == false)
-  {
-    corner = [corner[0] + Math.min(mouseStart[0], mouseEnd[0]) * d / canW, corner[1] + Math.min(mouseStart[1], mouseEnd[1]) * d / canW];
+  if (lastShift == false && event.shiftKey == true) {
+    corner = [
+      corner[0] + (Math.min(mouseStart[0], mouseEnd[0]) * d) / canW,
+      corner[1] + (Math.min(mouseStart[1], mouseEnd[1]) * d) / canW,
+    ];
     //Ms = Corner + MouseStart * Dem / CanW;
-    d = Math.max(Math.abs(mse[0] - mee[0]), Math.abs(mse[1] - mee[1])) * d / canW;
+    d =
+      (Math.max(Math.abs(mse[0] - mee[0]), Math.abs(mse[1] - mee[1])) * d) /
+      canW;
     mouseStart = [event.offsetX, event.offsetY];
     console.log("start");
-    lastShift = true;    
+    lastShift = true;
+    mode = "zoom";
+  } else {
+    mode = "move";
   }
   /*
   if (event.shiftKey == true && lastShift == false) {
@@ -267,14 +266,14 @@ function mouseDown(event) {
   */
 }
 
-function mouseUp(event) {
+export function mouseUp(event) {
   console.log("up");
 
-  if (lastShift == true) {
+  if (lastShift == true && event.shiftKey == true) {
     mouseEnd = [event.offsetX, event.offsetY];
     console.log("end");
-    lastShift = false; 
-    
+    lastShift = false;
+
     console.log(`d = ${d}`);
     console.log(`Mouse start = ${mouseStart}`);
     console.log(`Mouse end = ${mouseEnd}`);
@@ -283,6 +282,9 @@ function mouseUp(event) {
 
     mse = mouseStart;
     mee = mouseEnd;
+    mode = "def";
+  } else {
+    mode = "def";
   }
   /*
   if (event.shiftKey == true && lastShift == false) {
@@ -300,10 +302,16 @@ function mouseUp(event) {
   */
 }
 
+export function mouseMove(event) {
+  if (mode == "move") {
+    corner[0] -= (event.movementX * d) / canW;
+    corner[1] -= (event.movementY * d) / canW;
+  }
+}
 window.addEventListener("load", () => {
   initGL();
 
-  let can = document.getElementById("myCan");
+  let can = document.getElementById("mainCanvas");
 
   can.addEventListener("mousedown", (event) => {
     mouseDown(event);
@@ -311,6 +319,11 @@ window.addEventListener("load", () => {
   });
   can.addEventListener("mouseup", (event) => {
     mouseUp(event);
+    //console.log(event);
+  });
+
+  can.addEventListener("mousemove", (event) => {
+    mouseMove(event);
     //console.log(event);
   });
 

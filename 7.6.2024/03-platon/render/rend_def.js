@@ -1,5 +1,6 @@
 import { camera } from "../math/camera.js";
 import { mat4 } from "../math/mat4.js";
+import { vec3 } from "../math/vec3.js";
 
 class _renderObject {
   gl;
@@ -41,19 +42,8 @@ class _renderObject {
   drawPrim(p) {
     p.primMtlPtn.shd.apply();
 
-    let glType;
-
-    if (p.type == "triangles")
-      glType = this.gl.TRIANGLES;
-    else if (p.type == "triangle strip")
-      glType = this.gl.TRIANGLE_STRIP;
-    else if (p.type == "line strip")
-      glType = this.gl.LINE_STRIP;
-    else
-      glType = this.gl.POINTS;
-    
-
-    let mW = mat4().rotateY(47 * this.time);
+    //let mW = mat4().rotateY(47 * this.time);
+    let mW = mat4().rotate(47 * this.time, vec3(1, 1, 1).normalize());
     let mWVP = mW.mulMatr(this.mainCam.matrVP);
     let mWInv = mW.inverse().transpose();
 
@@ -71,9 +61,9 @@ class _renderObject {
     if (p.indexBuffer != undefined) {
       this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, p.indexBuffer);
 
-      this.gl.drawElements(glType, p.noofI, this.gl.UNSIGNED_INT, 0);
+      this.gl.drawElements(p.type, p.noofI, this.gl.UNSIGNED_INT, 0);
     } else {
-      this.gl.drawArrays(glType, 0, p.noofV);
+      this.gl.drawArrays(p.type, 0, p.noofV);
     }
   }
 }
