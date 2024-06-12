@@ -20,17 +20,18 @@ class _prim {
       this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_FUN;
     else
       this.type = mtlPtn.shd.glDrawingContext.POINTS;
-    
-    const vertFormat = mtlPtn.vertexFormat;  
-      /*
 
     let vertFormat = [
       {name : "Position",
        size : 12},
       {name : "Normal",
        size : 12}
-      ];*/
-    let vertSize = 24;
+      ];
+    let vertSize = 0;
+    
+    vertFormat.forEach((elem) => {
+      vertSize += elem.size;
+    });
 
     this.noofV = vertexes.length / (vertSize / 4);
 
