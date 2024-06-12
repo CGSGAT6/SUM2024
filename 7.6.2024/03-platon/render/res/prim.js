@@ -16,6 +16,8 @@ class _prim {
       this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_STRIP;
     else if (type == "line strip")
       this.type = mtlPtn.shd.glDrawingContext.LINE_STRIP;
+    else if (type == "lines")
+      this.type = mtlPtn.shd.glDrawingContext.LINES;
     else if (type == "triangle fun")
       this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_FUN;
     else

@@ -5,12 +5,12 @@ class _vertex {
   norm;
 
   constructor(pos, norm) {
-    this.pos = pos;
+    this.pos = vec3(pos);
 
     if (norm == undefined)
       this.norm = vec3(0);
     else  
-      this.norm = norm;
+      this.norm = vec3(norm);
   }
 
   toArray() {

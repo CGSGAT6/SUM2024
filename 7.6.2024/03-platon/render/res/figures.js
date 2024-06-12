@@ -234,4 +234,163 @@ export class Platon {
   
     return prim(mtlPtn, "triangles", vertexArr);
   }
+  
+  static truncedIcoCreate(mtlPtn, size) {
+    const 
+      sqrt5d2 = Math.sqrt(5) / 2,
+      sin72 = Math.sin(72 * Math.PI / 180),
+      cos72 = Math.cos(72 * Math.PI / 180);
+  
+    let pnts0 = [
+      vec3(0, sqrt5d2, 0)
+    ]
+  
+    for (let i = 0; i < 5; i++) {
+      pnts0.push(vec3(Math.cos((72 * i) * Math.PI /180), 0.5, Math.sin((72 * i) * Math.PI /180)));
+    }
+  
+    for (let i = 0; i < 5; i++) {
+      pnts0.push(vec3(-Math.cos((72 * i) * Math.PI /180), -0.5, -Math.sin((72 * i) * Math.PI /180)));
+    }
+  
+    pnts0.push(vec3(0, -sqrt5d2, 0));
+
+    let ind = [];
+
+    for (let i = 0; i < 5; i++) {
+      ind.push(0, i + 1);
+    }
+
+    for (let i = 1; i < 6; i++) {
+      ind.push(i, 1 + (i) % 5);
+    }
+
+    
+    let h = [
+      1, 9,
+      2, 9,
+      2, 10,
+      3, 10,
+      3, 6,
+      4, 6,
+      4, 7,
+      5, 7,
+      5, 8,
+      1, 8,
+    ]
+    ind = ind.concat(h);
+
+    for (let i = 1; i < 6; i++) {
+      ind.push(5 + i, 6 + i % 5);
+    }
+    
+    for (let i = 0; i < 5; i++) {
+      ind.push(11, 5 + i + 1);
+    }
+
+    let pnts1 = [];
+
+    for (let i = 0; i < ind.length; i += 2) {
+      pnts1.push(
+        pnts0[ind[i]].mulNum(2 / 3).addVec(pnts0[ind[i + 1]].mulNum(1 / 3)),
+        pnts0[ind[i]].mulNum(1 / 3).addVec(pnts0[ind[i + 1]].mulNum(2 / 3))
+      );
+    }
+
+    let indexesPent = [
+      // up
+      [0, 2, 4, 6, 8],
+      // 2st lauer
+      [1, 10, 20, 38, 19],
+      [3, 12, 24, 22, 11],
+      [5, 14, 28, 26, 13],
+      [7, 15, 30, 32, 16], 
+      [9, 18, 36, 34, 17],
+      // 2nd lauer
+      [21, 23, 46, 57, 45],
+      [25, 27, 48, 59, 47],
+      [29, 31, 40, 51, 49],
+      [33, 35, 42, 53, 41],
+      [39, 37, 43, 55, 44],
+      // down
+      [50, 52, 54, 56, 58],
+    ];
+
+    let indexesHex = [
+      // up layer
+      [0, 1, 10, 11, 3, 2],
+      [2, 3, 12, 13, 5, 4],
+      [4, 5, 14, 15, 7, 6],
+      [6, 7, 16, 17, 9, 8],
+      [8, 9, 18, 19, 1, 0],
+      // middle layer 
+      [20, 21, 23, 22, 11, 10],
+      [22, 23, 46, 47, 25, 24],
+      [24, 25, 27, 26, 13, 12],
+      [26, 27, 48, 49, 29, 28],
+      [28, 29, 31, 30, 15, 14],
+      [30, 31, 40, 41, 33, 32],
+      [32, 33, 35, 34, 17, 16],
+      [34, 35, 42, 43, 37, 36],
+      [36, 37, 39, 38, 19, 18],
+      [38, 39, 44, 45, 21, 20],
+      // down layer
+      [50, 51, 40, 41, 53, 52],
+      [52, 53, 42, 43, 55, 54],
+      [54, 55, 44, 45, 57, 56],
+      [56, 57, 46, 47, 59, 58],
+      [58, 59, 48, 49, 51, 50],
+    ];
+
+    let pntsR = [];
+
+    for (let i in indexesPent){
+      pntsR.push(...createPentagon(
+        pnts1[indexesPent[i][0]],
+        pnts1[indexesPent[i][1]],
+        pnts1[indexesPent[i][2]],
+        pnts1[indexesPent[i][3]],
+        pnts1[indexesPent[i][4]]));
+    }
+
+    for (let i in indexesHex){
+      pntsR.push(...createHexagon(
+        pnts1[indexesHex[i][0]],
+        pnts1[indexesHex[i][1]],
+        pnts1[indexesHex[i][2]],
+        pnts1[indexesHex[i][3]],
+        pnts1[indexesHex[i][4]],
+        pnts1[indexesHex[i][5]]));
+    }
+
+    let vert = [];
+
+    for (let i in pntsR) {
+      vert.push(vertex(pntsR[i]));
+    }
+
+    vertex().autoNormal(vert);
+   // ---------------------------------      
+    
+    let vertexes = vertex().createVertexArray(vert);
+
+    return prim(mtlPtn, "triangles", vertexes);
+  }
+}
+
+function createPentagon(p0, p1, p2, p3, p4) {
+  return [
+    vec3(p0), vec3(p1), vec3(p2),
+    vec3(p0), vec3(p2), vec3(p3),
+    vec3(p0), vec3(p3), vec3(p4),
+  ]
+}
+
+function createHexagon(p0, p1, p2, p3, p4, p5) {
+  return [
+    vec3(p0), vec3(p1), vec3(p2),
+    vec3(p0), vec3(p2), vec3(p3),
+    vec3(p0), vec3(p3), vec3(p4),
+    vec3(p0), vec3(p4), vec3(p5),
+  ]
 }

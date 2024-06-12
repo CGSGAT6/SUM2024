@@ -69,7 +69,7 @@ function main() {
     };
 
   tetrMtlPtn.shd.create().then(() => {
-    tetrPrim = Platon.tetrCreate(tetrMtlPtn, 1);
+    tetrPrim = Platon.truncedIcoCreate(tetrMtlPtn, 1);
     cubeMtlPtn.shd.create().then(() => {
       cubePrim = Platon.cubeCreate(cubeMtlPtn, 0.5);
       octMtlPtn.shd.create().then(() => {
@@ -85,9 +85,6 @@ function main() {
       })
     })
   })
-
-  fstMtlPtn.shd.create().then(() => {fstPrim = Platon.cubeCreate(fstMtlPtn, 0.5);}).then(() => {
-    draw();});
 } 
 
 window.addEventListener("load", () => {
