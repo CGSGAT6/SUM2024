@@ -9,29 +9,34 @@ const app = express();
 
 let counter = 0;
 
-app.get("/", (req, res, next) => {
-  counter++;
-  console.log(counter);
-  next();
-});
-
 app.use(express.static("client"));
-
-app.get("/seeData", (req, res, next) => {
-  res.send(`Data: ${counter}`);
-});
 
 const server = http.createServer(app);
 
 const wss = new WebSocketServer({ server });
 
-wss.on("connection", (ws) => {
-  ws.on("message", (message) => {
-    console.log("A: " + message.toString());
-    ws.send(`Client get message: ${message}, from you`);
-  });
+let allMessages = [];
 
-  ws.send(`Hi, we get new client! #${counter}`);
+wss.on("connection", (ws) => {
+  let msgHistory = {
+    type: "hist",
+    msgs: new Array(...allMessages),
+    nO: counter++,
+  };
+
+  ws.send(JSON.stringify(msgHistory));
+
+  ws.on("message", (message) => {
+    let txt = JSON.parse(message.toString());
+
+    if (txt.type == "msg") {
+      allMessages.push(message.toString());
+
+      for (let s of wss.clients) {
+        s.send(JSON.stringify(txt));
+      }
+    }
+  });
 });
 
 const host = "localhost";

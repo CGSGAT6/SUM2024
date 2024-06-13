@@ -1,0 +1,55 @@
+div.messages_field {
+  overflow-y: scroll;
+  height: 300px;
+  width: 500px;
+  border: 1px black solid;
+  background-color: azure;
+}
+
+textarea.input_field {
+  width: 450px;
+  height: 80px;
+  overflow-y: scroll;
+  resize: none;
+}
+
+.send_btn {
+  width: 50px;
+  height: 80px;
+}
+
+#my_msg {
+  background-color: aquamarine;
+  float: right;
+}
+
+div.msg {
+  border: 1px black solid;
+  border-radius: 5px;
+  background-color: cadetblue;
+  word-wrap: break-word;
+  max-width: 350px;
+  display: inline-block;
+  padding: 0px 0px 3px;
+}
+
+div.msg_val {
+  padding: 1px 3px 1px;
+  margin-top: 3px;
+  word-wrap: break-word;
+  max-width: 350px;
+}
+
+div.msg_name {
+  padding: 1px 1px 1px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: 1px black solid;
+  word-wrap: break-word;
+  max-width: 350px;
+  background-color: rgb(218, 247, 248);
+}
+
+.messages_table {
+  width: 488px;
+}

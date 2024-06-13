@@ -4,12 +4,32 @@
     <title>Test page</title>
     <meta charset="utf-8" />
     <script src="./index.js" type="module"></script>
+    <link rel="stylesheet" href="./mystyle.css" />
   </head>
   <body>
-    <h1 style="color: blueviolet">QuQu</h1>
-    <b>AT6</b>
-    <input type="text" />
-    <div class="message_field"></div>
-    <p id="DataField"></p>
+    <h1 style="color: blueviolet"><b>QuQu</b></h1>
+    <table>
+      <tr>
+        <td>
+          <input
+            type="text"
+            class="name_field"
+            placeholder="ИМЯ ПОЛЬЗОВАТЕЛЯ"
+          />
+        </td>
+        <td><input type="button" class="user_btn" /></td>
+      </tr>
+    </table>
+    <div class="messages_field">
+      <table class="messages_table"></table>
+    </div>
+    <table>
+      <tr>
+        <td>
+          <textarea class="input_field" placeholder="Сообщение"></textarea>
+        </td>
+        <td><input type="button" class="send_btn" /></td>
+      </tr>
+    </table>
   </body>
 </html>
