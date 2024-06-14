@@ -30,7 +30,8 @@ wss.on("connection", (ws) => {
     let txt = JSON.parse(message.toString());
 
     if (txt.type == "msg") {
-      allMessages.push(message.toString());
+      txt.number = allMessages.length;
+      allMessages.push(JSON.stringify(txt));
 
       for (let s of wss.clients) {
         s.send(JSON.stringify(txt));

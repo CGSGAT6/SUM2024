@@ -18,15 +18,19 @@ textarea.input_field {
   height: 80px;
 }
 
-#my_msg {
+div.my_msg {
   background-color: aquamarine;
   float: right;
+}
+
+div.not_my_msg {
+  background-color: cadetblue;
+  float: left;
 }
 
 div.msg {
   border: 1px black solid;
   border-radius: 5px;
-  background-color: cadetblue;
   word-wrap: break-word;
   max-width: 350px;
   display: inline-block;
@@ -50,6 +54,22 @@ div.msg_name {
   background-color: rgb(218, 247, 248);
 }
 
+div.msg_repl {
+  padding: 1px 1px 1px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border-bottom: 1px black solid;
+  word-wrap: break-word;
+  max-width: 350px;
+  background-color: rgb(160, 221, 203);
+  font-size: small;
+  text-decoration: none;
+}
+
 .messages_table {
-  width: 488px;
+  width: 99.9%;
+}
+
+div.msg_repl > a {
+  text-decoration: none;
 }

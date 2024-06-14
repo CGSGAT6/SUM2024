@@ -1,11 +1,87 @@
 console.log("CGSG Forever!");
 
+let choosedMsg = -1;
+
 let userName = "";
 
-let userBtn = document.querySelector(".user_btn");
-let nameField = document.querySelector(".name_field");
+let userBtn = $(".user_btn").get([0]); //document.querySelector(".user_btn");
+let nameField = $(".name_field").get([0]);
+let button = $(".send_btn").get([0]);
 
-userBtn.addEventListener("click", () => {
+const messageField = $(".messages_field").get([0]);
+const messageTable = $(".messages_table").get([0]);
+const inputField = $(".input_field").get([0]);
+
+function messageAdd(txt) {
+  let msg = document.createElement("div");
+  msg.classList.add("msg");
+  msg.number = txt.number;
+
+  let mName = document.createElement("div");
+  mName.className = "msg_name";
+  mName.innerText = txt.name;
+  mName.id = txt.number;
+
+  mName.setAttribute("data-scrollh", txt.height);
+
+  let mVal = document.createElement("div");
+  mVal.className = "msg_val";
+  mVal.innerText = txt.value;
+
+  // mName.onclick = (event) => {
+  //   if (choosedMsg == mName.id) choosedMsg = -1;
+  //   else choosedMsg = mName.id;
+  //   //console.log(choosedMsg);
+  // };
+
+  if (txt.name == userName) {
+    msg.classList.add("my_msg");
+  } else {
+    msg.classList.add("not_my_msg");
+  }
+
+  msg.appendChild(mName);
+
+  if (txt.repl !== -1) {
+    let replDiv = document.createElement("div");
+    replDiv.classList.add("msg_repl");
+    let ref = document.createElement("p");
+    let href = "#" + txt.repl;
+
+    let replMsg = document.getElementById(txt.repl);
+    let replTxt = replMsg.innerText + ": ";
+    let par = replMsg.parentElement.lastChild.innerText;
+
+    replTxt += par.slice(0, 5);
+    if (par.slice(0, 5) != par) replTxt += "...";
+
+    ref.innerText = replTxt;
+    replDiv.appendChild(ref);
+
+    replDiv.onclick = () => {
+      messageField.scroll({
+        top: $(href).data("scrollh"),
+        behavior: "smooth",
+      });
+      //console.log($(href).data("scrollh"));
+    };
+    msg.appendChild(replDiv);
+  }
+
+  msg.appendChild(mVal);
+
+  let tr = document.createElement("tr");
+
+  tr.appendChild(msg);
+  messageTable.appendChild(tr);
+
+  $("#" + txt.number).dblclick((e) => {
+    if (choosedMsg == e.target.id) choosedMsg = -1;
+    else choosedMsg = e.target.id;
+  });
+}
+
+$(".user_btn").click(() => {
   let name = nameField.value;
 
   if (name != "" && nameField.disabled == false) {
@@ -15,36 +91,50 @@ userBtn.addEventListener("click", () => {
   }
 });
 
+// userBtn.addEventListener("click", () => {
+//   let name = nameField.value;
+
+//   if (name != "" && nameField.disabled == false) {
+//     userName = name;
+//     nameField.disabled = true;
+//     initializeCommunication();
+//   }
+// });
+
 function initializeCommunication() {
   let socket = new WebSocket("ws://localhost:4747");
-
-  let button = document.querySelector(".send_btn");
-
-  const messageField = document.querySelector(".messages_field");
-  const messageTable = document.querySelector(".messages_table");
-  const inputField = document.querySelector(".input_field");
 
   button.addEventListener("click", () => {
     if (userName == "") return;
 
     let txt = inputField.value;
-    if (txt.trim() !== "") {
+
+    txt = txt.trim();
+    if (txt !== "") {
       inputField.value = "";
       socket.send(
         JSON.stringify({
           type: "msg",
           name: userName,
-          value: txt.trim(),
+          value: txt,
+          repl: choosedMsg,
+          height: messageField.scrollHeight,
         }),
       );
+
+      choosedMsg = -1;
     }
   });
 
-  inputField.addEventListener("keydown", (e) => {
-    if (e.keyCode == 13 && !e.shiftKey) {
-      button.dispatchEvent(new Event("click"));
-    }
+  $(".input_field").keydown((e) => {
+    if (e.keyCode == 13 && !e.shiftKey) $(".send_btn").click();
   });
+
+  // inputField.addEventListener("keydown", (e) => {
+  //   if (e.keyCode == 13 && !e.shiftKey) {
+  //     button.dispatchEvent(new Event("click"));
+  //   }
+  // });
 
   socket.onopen = (event) => {
     console.log("Socket open");
@@ -54,30 +144,16 @@ function initializeCommunication() {
     let txt = JSON.parse(event.data.toString());
 
     if (txt.type == "msg") {
-      let msg = document.createElement("div");
-      msg.className = "msg";
+      messageAdd(txt);
+      messageField.scroll({
+        top: messageField.scrollHeight,
+        behavior: "smooth",
+      });
+      // $("#" + txt.number)
+      //   .parent()
+      //   .hide()
+      //   .show(500).then();
 
-      let mName = document.createElement("div");
-      mName.className = "msg_name";
-      mName.innerText = txt.name;
-
-      let mVal = document.createElement("div");
-      mVal.className = "msg_val";
-      mVal.innerText = txt.value;
-
-      if (txt.name == userName) {
-        msg.id = "my_msg";
-      }
-
-      msg.appendChild(mName);
-      msg.appendChild(mVal);
-
-      let tr = document.createElement("tr");
-
-      tr.appendChild(msg);
-      messageTable.appendChild(tr);
-      /*messageField.appendChild(msg);
-      messageField.appendChild(document.createElement("br"));*/
       messageField.scroll({
         top: messageField.scrollHeight,
         behavior: "smooth",
@@ -87,27 +163,7 @@ function initializeCommunication() {
 
       for (let m of msgs) {
         m = JSON.parse(m);
-        let msg = document.createElement("div");
-        msg.className = "msg";
-        let mName = document.createElement("div");
-        mName.className = "msg_name";
-        mName.innerText = m.name;
-        let mVal = document.createElement("div");
-        mVal.className = "msg_val";
-        mVal.innerText = m.value;
-
-        if (m.name == userName) {
-          msg.id = "my_msg";
-        }
-
-        msg.appendChild(mName);
-        msg.appendChild(mVal);
-
-        let tr = document.createElement("tr");
-
-        tr.appendChild(msg);
-        messageTable.appendChild(tr);
-
+        messageAdd(m);
         /*
         messageField.appendChild(msg);
         messageField.appendChild(document.createElement("br"));*/
