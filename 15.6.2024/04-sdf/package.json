@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "http-server": "^14.1.1",
+    "rollup": "^4.18.0"
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4"
+  },
+  "type": "module"
+}
