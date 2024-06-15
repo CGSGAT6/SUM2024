@@ -11,6 +11,9 @@ let button = $(".send_btn").get([0]);
 const messageField = $(".messages_field").get([0]);
 const messageTable = $(".messages_table").get([0]);
 const inputField = $(".input_field").get([0]);
+const inputTable = $(".input_table").get([0]);
+
+$(".repl_area").hide();
 
 function messageAdd(txt) {
   let msg = document.createElement("div");
@@ -55,10 +58,24 @@ function messageAdd(txt) {
     replTxt += par.slice(0, 5);
     if (par.slice(0, 5) != par) replTxt += "...";
 
-    ref.innerText = replTxt;
-    replDiv.appendChild(ref);
+    replDiv.innerText = replTxt;
+    //ref.innerText = replTxt;
+    //replDiv.appendChild(ref);
 
     replDiv.onclick = () => {
+      replMsg.style.backgroundColor = "rgb(226, 48, 3)";
+
+      let t = 0;
+      let int = setInterval(() => {
+        t++;
+        let col = `rgb(${226 * (1 - 0.025 * t) + 218 * 0.025 * t}, ${48 * (1 - 0.025 * t) + 247 * 0.025 * t}, ${3 * (1 - 0.025 * t) + 248 * 0.025 * t})`;
+        replMsg.style.backgroundColor = col;
+      }, 50);
+
+      setTimeout(() => {
+        clearInterval(int);
+      }, 2000);
+
       messageField.scroll({
         top: $(href).data("scrollh"),
         behavior: "smooth",
@@ -76,8 +93,31 @@ function messageAdd(txt) {
   messageTable.appendChild(tr);
 
   $("#" + txt.number).dblclick((e) => {
-    if (choosedMsg == e.target.id) choosedMsg = -1;
-    else choosedMsg = e.target.id;
+    $("#" + txt.number)
+      .animate({ width: "+=20px", height: "+=10px" }, "fast")
+      .animate({ width: "-=20px", height: "-=10px" }, "fast");
+
+    if (choosedMsg == e.target.id) {
+      $(".repl_area").hide(300);
+      //$(".repl_area").slideUp("slow");
+      choosedMsg = -1;
+    } else {
+      //$(".repl_area").hide(300);
+      //$(".repl_area").slideUp("slow");
+      choosedMsg = e.target.id;
+
+      let replMsg = document.getElementById(choosedMsg);
+      let replTxt = replMsg.innerText + ": ";
+      let par = replMsg.parentElement.lastChild.innerText;
+
+      replTxt += par.slice(0, 5);
+      if (par.slice(0, 5) != par) replTxt += "...";
+
+      $(".repl_area").get([0]).children[0].innerText =
+        "Ответ на: " + '"' + replTxt + '"';
+      $(".repl_area").show(300);
+      //$(".repl_area").slideDown("slow");
+    }
   });
 }
 
@@ -118,10 +158,10 @@ function initializeCommunication() {
           name: userName,
           value: txt,
           repl: choosedMsg,
-          height: messageField.scrollHeight,
+          height: messageTable.scrollHeight,
         }),
       );
-
+      $(".repl_area").hide(300);
       choosedMsg = -1;
     }
   });

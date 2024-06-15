@@ -70,6 +70,16 @@ div.msg_repl {
   width: 99.9%;
 }
 
-div.msg_repl > a {
+div.msg_repl > p {
   text-decoration: none;
+  height: 2px;
+}
+
+tr.repl_area > td {
+  padding: 1px 1px 1px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+  border: 1px black solid;
+  background-color: rgb(160, 221, 203);
+  font-size: small;
 }
