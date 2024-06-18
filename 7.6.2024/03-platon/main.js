@@ -77,25 +77,33 @@ function main() {
     window.requestAnimationFrame(draw);
     };
 
-  truncIcoMtlPtn.shd.create().then(() => {
+    
     truncIcoPrim = Platon.truncedIcoCreate(truncIcoMtlPtn, 1);
-    cubeMtlPtn.shd.create().then(() => {
-      cubePrim = Platon.cubeCreate(cubeMtlPtn, 0.5);
-      octMtlPtn.shd.create().then(() => {
-        octPrim = Platon.octCreate(octMtlPtn, 1);
-        dodecMtlPtn.shd.create().then(() => {
-          dodecPrim = Platon.dodecCreate(dodecMtlPtn, 1);
-          icoMtlPtn.shd.create().then(() => {
-            icoPrim = Platon.icoCreate(icoMtlPtn, 1);
-            tetrMtnPtn.shd.create().then(() => {
-              tetrPrim = Platon.tetrCreate(tetrMtnPtn, 2);
-              draw();
-            })
-          })
-        })
-      })
-    })
-  })
+    cubePrim = Platon.cubeCreate(cubeMtlPtn, 0.5);
+    octPrim = Platon.octCreate(octMtlPtn, 1);
+    dodecPrim = Platon.dodecCreate(dodecMtlPtn, 1);
+    icoPrim = Platon.icoCreate(icoMtlPtn, 1);
+    tetrPrim = Platon.tetrCreate(tetrMtnPtn, 2);
+    draw();
+  // truncIcoMtlPtn.shd.create().then(() => {
+  //   truncIcoPrim = Platon.truncedIcoCreate(truncIcoMtlPtn, 1);
+  //   cubeMtlPtn.shd.create().then(() => {
+  //     cubePrim = Platon.cubeCreate(cubeMtlPtn, 0.5);
+  //     octMtlPtn.shd.create().then(() => {
+  //       octPrim = Platon.octCreate(octMtlPtn, 1);
+  //       dodecMtlPtn.shd.create().then(() => {
+  //         dodecPrim = Platon.dodecCreate(dodecMtlPtn, 1);
+  //         icoMtlPtn.shd.create().then(() => {
+  //           icoPrim = Platon.icoCreate(icoMtlPtn, 1);
+  //           tetrMtnPtn.shd.create().then(() => {
+  //             tetrPrim = Platon.tetrCreate(tetrMtnPtn, 2);
+  //             draw();
+  //           })
+  //         })
+  //       })
+  //     })
+  //   })
+  // })
 } 
 
 window.addEventListener("load", () => {

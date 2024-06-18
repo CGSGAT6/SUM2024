@@ -1,0 +1,21 @@
+{
+  "name": "18.6.2024",
+  "version": "1.0.0",
+  "description": "Shooter project",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "AT6",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "rollup": "^4.18.0",
+    "ws": "^8.17.1"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4"
+  }
+}
