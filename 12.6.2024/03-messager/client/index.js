@@ -201,8 +201,8 @@ function initializeCommunication() {
     } else if (txt.type == "hist") {
       let msgs = txt.msgs;
 
-      for (let m of msgs) {
-        m = JSON.parse(m);
+      for (let m of msgs[0]) {
+        //m = JSON.parse(m);
         messageAdd(m);
         /*
         messageField.appendChild(msg);
