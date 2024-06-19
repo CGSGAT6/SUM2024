@@ -1,17 +1,17 @@
 class _prim {
   vertexBuffer;
   indexBuffer;
-  primMtlPtn;
   vertexArray;
   noofV = 0;
   noovI = 0;
   type;
+  primUBO;
+  material;
   
   createData = {};
 
   create() {
-    let gl = this.primMtlPtn.shd.glDrawingContext;
-
+    let gl = this.material.mtlPtn.shd.glDrawingContext;
     
     let vertFormat = [
       {name : "Position",
@@ -48,10 +48,10 @@ class _prim {
 
     let allSize = 0;
     for (let i in vertFormat) {
-      let findedAttr = this.primMtlPtn.shd.attrs["In" + vertFormat[i].name];
+      let findedAttr = this.material.mtlPtn.shd.attrs["In" + vertFormat[i].name];
 
       if (findedAttr != undefined) {
-        let attrLoc = this.primMtlPtn.shd.attrs["In" + vertFormat[i].name].loc;
+        let attrLoc = this.material.mtlPtn.shd.attrs["In" + vertFormat[i].name].loc;
 
         if (attrLoc != -1) {
           gl.vertexAttribPointer(attrLoc, vertFormat[i].size / 4, gl.FLOAT, false, vertSize, allSize);
@@ -66,10 +66,11 @@ class _prim {
 
   }
 
-  constructor(mtlPtn, type, vertexes, indexes) {
+  constructor(material, type, vertexes, indexes) {
+    let mtlPtn = material.mtlPtn;
+    this.material = material;
     this.createData.vertexes = vertexes;
     this.createData.indexes = indexes;
-    this.primMtlPtn = mtlPtn;
     
     if (type == "triangles")
       this.type = mtlPtn.shd.glDrawingContext.TRIANGLES;
@@ -82,12 +83,18 @@ class _prim {
     else if (type == "triangle fun")
       this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_FUN;
     else
-      this.type = mtlPtn.shd.glDrawingContext.POINTS;
-
-    
+      this.type = mtlPtn.shd.glDrawingContext.POINTS; 
   }
 }
 
 export function prim(mtlPtn, type, vertexes, indexes) {
   return new _prim(mtlPtn, type, vertexes, indexes);
 }
+
+// phong:
+// - Ka
+// - Kd
+// - Ks
+// - Trans
+// - Ph
+// - Texture flags

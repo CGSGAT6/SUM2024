@@ -91,12 +91,12 @@ class _shader {
     const countUniformBlocks = this.glDrawingContext.getProgramParameter(this.id, this.glDrawingContext.ACTIVE_UNIFORM_BLOCKS);
     for (let i = 0; i < countUniformBlocks; i++) {
       const block_name = this.glDrawingContext.getActiveUniformBlockName(this.id, i);
-      const index = this.glDrawingContext.getActiveUniformBlockIndex(this.id, block_name);
+      const index = this.glDrawingContext.getUniformBlockIndex(this.id, block_name);
       this.uniformBlocks[block_name] = {
         name: block_name,
         index: index,
-        size: this.glDrawingContext.getActiveUniformBlockParameter(this.id, idx, this.glDrawingContext.UNIFORM_BLOCK_DATA_SIZE),
-        bind: this.glDrawingContext.getActiveUniformBlockParameter(this.id, idx, this.glDrawingContext.UNIFORM_BLOCK_BINDING),
+        size: this.glDrawingContext.getActiveUniformBlockParameter(this.id, index, this.glDrawingContext.UNIFORM_BLOCK_DATA_SIZE),
+        bind: this.glDrawingContext.getActiveUniformBlockParameter(this.id, index, this.glDrawingContext.UNIFORM_BLOCK_BINDING),
       };
     }
     

@@ -3,8 +3,10 @@ import { shader } from "./shaders";
 class _materialPattern {
   shd;
   name;
+  rnd;
 
   constructor(name, shdName, rndObj) {
+    this.rnd = rndObj;
     this.name = name;
     this.shd = shader(shdName, rndObj);
   }

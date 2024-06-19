@@ -115,6 +115,14 @@ class _vec3 {
       this.x * m.m[0][1] + this.y * m.m[1][1] + this.z * m.m[2][1] + m.m[3][1],
       this.x * m.m[0][2] + this.y * m.m[1][2] + this.z * m.m[2][2] + m.m[3][2]);
   } // End of 'pointTransform' function
+
+  toArray() {
+    return [this.x, this.y, this.z];  
+  }
+
+  toArray4(a) {
+    return [this.x, this.y, this.z, a];  
+  }
 }
 
 // Vector setting function

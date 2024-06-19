@@ -366,7 +366,7 @@ export class Platon {
     let vert = [];
 
     for (let i in pntsR) {
-      vert.push(vertex(pntsR[i]));
+      vert.push(vertex(pntsR[i].mulNum(size)));
     }
 
     vertex().autoNormal(vert);
