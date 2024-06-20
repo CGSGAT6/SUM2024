@@ -5,13 +5,15 @@ import { Platon } from "./render/res/figures.js";
 import { mat4 } from "./math/mat4.js";
 import { input } from "./render/input.js";
 import { material } from "./render/res/materials.js";
+import { unitPlayer } from "./render/units/unit_player.js";
+
 
 let testRotate = 0;
 
 let socket;
 let inp;
 let players = [];
-let playerId;
+let playerId = -1;
 
 let myRnd;
 let mainInput;
@@ -81,9 +83,14 @@ function main() {
     }));
   })
 
+  
 
   let x = 0, y = 0, z = 0;
   const draw = () => {
+    testUnit.intervalStart = interStart;
+    testUnit.interval = inter;
+    testUnit.response();
+
     // drawing
     myRnd.drawFrame();
 
@@ -102,12 +109,19 @@ function main() {
           })
         );
 
+    
+    let pos = vec3(0, 0, 0);
+    if (playerId != -1)
+      pos = players[playerId].oldPos.mulNum(1 - d).addVec(players[playerId].pos.mulNum(d));
+
+    myRnd.mainCam.set(pos.addVec(vec3(0, 0, 5)), pos, vec3(0, 1, 0));    
+
+    testUnit.render();
+
     for (let p of players) {
       myRnd.drawPrim(p.prim, mat4().translate(p.oldPos.mulNum(1 - d).addVec(p.pos.mulNum(d))));
     }
 
-    //myRnd.drawPrim(trunc, mat4().rotateY(testRotate).mulMatr(mat4().translate(vec3(x, y, z))));
-    // animation register
     window.requestAnimationFrame(draw);
     };
 
@@ -129,6 +143,9 @@ function main() {
   myRnd.mainCam.set(vec3(0, 0, 3), vec3(0, 0, 0), vec3(0, 1, 0));
   myRnd.mainCam.setSize(1000, 1000);
   //let trunc = Platon.truncedIcoCreate(defMaterial, 0.47);
+
+  let testUnit = unitPlayer(myRnd, 0);
+  testUnit.init();
 
   draw();
 }

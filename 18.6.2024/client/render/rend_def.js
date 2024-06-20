@@ -1,7 +1,10 @@
 import { camera } from "../math/camera.js";
 import { mat4 } from "../math/mat4.js";
 import { vec3 } from "../math/vec3.js";
+import { input } from "./input.js";
 import { ubo_buffer } from "./res/buffers.js";
+import { materialPattern } from "./res/material_pattern.js";
+import { material } from "./res/materials.js";
 import { Timer } from "./timer.js";
 
 const primUBOBindingPoint = 0;
@@ -16,7 +19,13 @@ class _renderObject {
   frameUBO;
 
   primList = [];
+
+  defaultMaterialPattern;
+  defaultMaterial;
   
+
+  input;
+
   constructor (canvasId) {
     this.init(canvasId)
   }
@@ -50,6 +59,20 @@ class _renderObject {
 
     this.primUBO = ubo_buffer(this, "PrimUBO", 16 * 4 * 4, primUBOBindingPoint);
     this.frameUBO = ubo_buffer(this, "FrameUBO", 80, frameUBOBindingPoint);
+
+    this.defaultMaterialPattern = materialPattern("fst", "default", this);
+    this.defaultMaterial = material(
+      this.defaultMaterialPattern,
+      {
+        "ka":vec3(0.47, 0.30, 0.7),
+        "kd":vec3(0.7, 0.6, 0.1),
+        "ks":vec3(0.727811, 0.626959, 0.626959),
+        "ph":76.8,
+        "trans":0,
+      },
+    "defMtl");
+
+    this.input = new input(this);
   }
 
   drawFrame() {
