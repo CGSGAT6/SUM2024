@@ -1,4 +1,6 @@
 import { vec3 } from "../../math/vec3";
+import { materialPattern } from "./material_pattern";
+import { material } from "./materials";
 import { prim } from "./prim";
 import { vertex } from "./vertex";
 
@@ -393,4 +395,19 @@ function createHexagon(p0, p1, p2, p3, p4, p5) {
     vec3(p0), vec3(p3), vec3(p4),
     vec3(p0), vec3(p4), vec3(p5),
   ]
+}
+
+let scdMtlPtn = null;
+let scdMtl = null;
+
+
+export function planePrim(mtlPtn, size) {
+  let vertexes = [
+    -size, 0, size, 0, 1, 0, 0, 0,
+    -size, 0, -size, 0, 1, 0, 0, 1, 
+    size, 0, size, 0, 1, 0, 1, 0,
+    size, 0, -size, 0, 1, 0, 1, 1,
+  ]
+
+  return prim(mtlPtn, "triangle strip", vertexes);
 }

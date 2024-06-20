@@ -6,19 +6,20 @@ class _prim {
   noovI = 0;
   type;
   primUBO;
-  material;
+  mtlPtn;
   
   createData = {};
 
   create() {
-    let gl = this.material.mtlPtn.shd.glDrawingContext;
+    let gl = this.mtlPtn.shd.glDrawingContext;
     
-    let vertFormat = [
-      {name : "Position",
-       size : 12},
-      {name : "Normal",
-       size : 12}
-      ];
+    let vertFormat = this.mtlPtn.vertexFormat;
+    //  = [
+    //   {name : "Position",
+    //    size : 12},
+    //   {name : "Normal",
+    //    size : 12}
+    //   ];
     let vertSize = 0;
     
     vertFormat.forEach((elem) => {
@@ -48,10 +49,10 @@ class _prim {
 
     let allSize = 0;
     for (let i in vertFormat) {
-      let findedAttr = this.material.mtlPtn.shd.attrs["In" + vertFormat[i].name];
+      let findedAttr = this.mtlPtn.shd.attrs["In" + vertFormat[i].name];
 
       if (findedAttr != undefined) {
-        let attrLoc = this.material.mtlPtn.shd.attrs["In" + vertFormat[i].name].loc;
+        let attrLoc = this.mtlPtn.shd.attrs["In" + vertFormat[i].name].loc;
 
         if (attrLoc != -1) {
           gl.vertexAttribPointer(attrLoc, vertFormat[i].size / 4, gl.FLOAT, false, vertSize, allSize);
@@ -66,9 +67,8 @@ class _prim {
 
   }
 
-  constructor(material, type, vertexes, indexes) {
-    let mtlPtn = material.mtlPtn;
-    this.material = material;
+  constructor(mtlPtn, type, vertexes, indexes) {
+    this.mtlPtn = mtlPtn;
     this.createData.vertexes = vertexes;
     this.createData.indexes = indexes;
     
@@ -84,6 +84,10 @@ class _prim {
       this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_FUN;
     else
       this.type = mtlPtn.shd.glDrawingContext.POINTS; 
+  }
+
+  setMaterial (material) {
+    this.material = material;
   }
 }
 

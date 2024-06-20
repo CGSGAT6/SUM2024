@@ -15,43 +15,35 @@ let counter = 0;
 
 let players = [];
 
-let hist = [];
-
 const interval = 50;
 
 wss.on("connection", async (ws) => {
   ws.send(JSON.stringify({
     type:"hist",
-    arr:hist,
     poses:players,
     id:counter,
-  }
-  ));
+  }));
 
   for (const s of wss.clients) {
     let msg = {
       type:"connect",
-      count:counter,
-    };
-    hist.push(msg);
-
-    players.push({
-      pos:vec3(counter),
       id:counter,
-    })
+    };
 
     s.send(JSON.stringify(msg));
   }
+
+  players.push({
+    pos:vec3(0),
+    id:counter,
+  })
+
   counter++;
   ws.on("message", (message) => {
-    //console.log(message.toString()
     let msg = JSON.parse(message.toString());
     if (msg.type == "move") {
       players[msg.id].pos = players[msg.id].pos.addVec(msg.move);
     }
-    // for (const s of wss.clients) {
-    //   s.send(message.toString());
-    // }
     });
 });
 

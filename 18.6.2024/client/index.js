@@ -6,6 +6,9 @@ import { mat4 } from "./math/mat4.js";
 import { input } from "./render/input.js";
 import { material } from "./render/res/materials.js";
 import { unitPlayer } from "./render/units/unit_player.js";
+import { unitMyPlayer } from "./render/units/unit_my_player.js";
+import { animationContext } from "./anim.js";
+import { unitPlane } from "./render/units/unit_test.js";
 
 
 let testRotate = 0;
@@ -15,7 +18,8 @@ let inp;
 let players = [];
 let playerId = -1;
 
-let myRnd;
+//let myAnim.rnd;
+let myAnim;
 let mainInput;
 let mtlPtn;
 let defMaterial;
@@ -24,13 +28,17 @@ let interStart;
 let inter;
 
 function playerAdd(msg, pos) {
-  let player = Platon.truncedIcoCreate(defMaterial, 0.47);
-  let playerMove = vec3(pos);
-  players.push({
-    prim:player,
-    pos:playerMove,
-    oldPos:playerMove,
-  })
+  
+  let player;
+  if (msg.id == playerId)
+    player = unitMyPlayer(myAnim.rnd, socket, msg.id);
+  else
+    player = unitPlayer(myAnim.rnd, msg.id);
+
+  myAnim.unitAdd(player);
+  player.pos = vec3(pos);
+  player.oldPos = vec3(pos);  
+  players.push(player);
 }
 
 function initializeCommunication() {
@@ -45,20 +53,17 @@ function initializeCommunication() {
     let msg = JSON.parse(event.data);
 
     if (msg.type == "hist") {
-
-      for (let m in msg.arr) {
-        playerAdd(msg.arr[m], msg.poses[m]);
+      playerId = msg.id;        
+      for (let m in msg.poses) {
+        playerAdd(msg.poses[m], msg.poses[m].pos);
       }
-      playerId = msg.id;
-    }
-    if (msg.type == "connect") {
-      playerAdd(msg, vec3(0));
-    }
-    if (msg.type == "rotate") {
-      testRotate = msg.value;
-      inp.value = msg.value;
-    }
-    if (msg.type == "update") {
+      console.log(playerId);
+
+    } else if (msg.type == "connect") {
+        playerAdd(msg, vec3(0));
+
+        console.log(players);
+    } else if (msg.type == "update") {
       for (let i in msg.pos) {
         if (players[i] != undefined) {
           players[i].oldPos = vec3(players[i].pos);
@@ -66,7 +71,7 @@ function initializeCommunication() {
         }
       }
 
-      interStart = myRnd.timer.globalTime;
+      interStart = myAnim.timer.globalTime;
       inter = msg.inter;
     }
   };
@@ -87,49 +92,40 @@ function main() {
 
   let x = 0, y = 0, z = 0;
   const draw = () => {
-    testUnit.intervalStart = interStart;
-    testUnit.interval = inter;
-    testUnit.response();
+    
+    for (let p of players) {
+      p.intervalStart = interStart;
+      p.interval = inter;
+    }
+
+    myAnim.unitsResponse();
 
     // drawing
-    myRnd.drawFrame();
+    myAnim.frameStart();
 
-    let d = (myRnd.timer.globalTime - interStart) * 1000 / inter;
-    x = (mainInput.keys["ArrowRight"] - mainInput.keys["ArrowLeft"]) * 0.30 / 4;
-    y = (mainInput.keys["ArrowUp"] - mainInput.keys["ArrowDown"]) * 0.30 / 4;
-    z = -(mainInput.keys["PageUp"] - mainInput.keys["PageDown"]) * 0.30 / 4;
-
-    if (x != 0 || y != 0 || z != 0)
-      if (socket.readyState != 0)
-        socket.send(
-          JSON.stringify({
-            id:playerId,
-            type:"move",
-            move:vec3(x, y, z),
-          })
-        );
-
-    
     let pos = vec3(0, 0, 0);
-    if (playerId != -1)
-      pos = players[playerId].oldPos.mulNum(1 - d).addVec(players[playerId].pos.mulNum(d));
+    if (playerId != -1 && playerId < players.length)
+      pos = players[playerId].curPos;
 
-    myRnd.mainCam.set(pos.addVec(vec3(0, 0, 5)), pos, vec3(0, 1, 0));    
+    let POI = pos.addVec(vec3(0, 0, 5));
+    let CamLoc = myAnim.rnd.mainCam.loc.addVec(POI.subVec(myAnim.rnd.mainCam.loc).mulNum(myAnim.rnd.anim.timer.localDeltaTime));//VecMulNum(VecSubVec(POI, AT6_RndCamLoc), Ani->DeltaTime));
 
-    testUnit.render();
+    myAnim.rnd.mainCam.set(pos.addVec(vec3(0, 0, 5)), pos, vec3(0, 1, 0));    
+    //myAnim.rnd.mainCam.set(CamLoc, pos, vec3(0, 1, 0));    
 
-    for (let p of players) {
-      myRnd.drawPrim(p.prim, mat4().translate(p.oldPos.mulNum(1 - d).addVec(p.pos.mulNum(d))));
-    }
+
+
+    myAnim.unitsRender();
 
     window.requestAnimationFrame(draw);
     };
 
 
 
-  myRnd = renderObject("can")
-  mainInput = new input(myRnd);
-  mtlPtn = materialPattern("fst", "default", myRnd);
+  //myAnim.rnd = renderObject("can")
+  myAnim = animationContext("can");
+  // mainInput = new input(myAnim.rnd);
+  mtlPtn = materialPattern("fst", "default", myAnim.rnd);
   defMaterial = material(
     mtlPtn,
     {
@@ -140,11 +136,13 @@ function main() {
       "trans":0,
     },
   "defMtl");
-  myRnd.mainCam.set(vec3(0, 0, 3), vec3(0, 0, 0), vec3(0, 1, 0));
-  myRnd.mainCam.setSize(1000, 1000);
+  myAnim.rnd.mainCam.set(vec3(0, 0, 3), vec3(0, 0, 0), vec3(0, 1, 0));
+  myAnim.rnd.mainCam.setSize(1000, 1000);
   //let trunc = Platon.truncedIcoCreate(defMaterial, 0.47);
 
-  let testUnit = unitPlayer(myRnd, 0);
+  myAnim.unitAdd(unitPlane(myAnim.rnd));
+
+  let testUnit = unitPlayer(myAnim.rnd, 0);
   testUnit.init();
 
   draw();

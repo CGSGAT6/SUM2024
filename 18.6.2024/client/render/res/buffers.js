@@ -17,9 +17,11 @@ class _buffer {
     this.gl.bindBuffer(this.type, this.id);
     this.gl.bufferData(this.type, size, this.gl.STATIC_DRAW);
   }
-  update(data) {
+  update(data, offset) {
+    if (offset == undefined)
+      offset = 0;
     this.gl.bindBuffer(this.type, this.id);
-    this.gl.bufferSubData(this.type, 0, data);
+    this.gl.bufferSubData(this.type, offset, data);
   }
 }
 export function buffer(...args) {

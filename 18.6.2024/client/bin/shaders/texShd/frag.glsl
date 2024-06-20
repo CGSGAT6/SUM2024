@@ -5,6 +5,8 @@ precision highp float;
 
 in vec3 DrawPos;
 in vec3 DrawNormal;
+in vec2 DrawTexCoord;
+
 
 uniform MaterialUBO
 {
@@ -139,7 +141,9 @@ void main( void )
   float k = min(1.0, 2.0 / (cc + cl * d + cq * d * d));
   vec3 LC = vec3(1.0);//vec3(0.7, 0.6, 0.1);
 
-  vec3 col = min(vec3(0.5), Ka) + Kd * dot(N, R);
+  vec3 tc = texture(tex0, DrawTexCoord).rgb;
+
+  vec3 col = min(vec3(0.5), tc) + tc * dot(N, R);
   col *= LC;
   col *= k;
 
@@ -151,9 +155,6 @@ void main( void )
   
   col = vec3(1.0, 1.0, 1.0);
 */
-  vec2 tx = DrawPos.xy;
-
-  vec3 tc = texture(tex0, tx).rgb;
 
   OutColor = vec4(col, 1.0);
   //OutColor = vec4(N, 1);

@@ -7,10 +7,13 @@ import { materialPattern } from "./res/material_pattern.js";
 import { material } from "./res/materials.js";
 import { Timer } from "./timer.js";
 
+
 const primUBOBindingPoint = 0;
 const frameUBOBindingPoint = 2;
 
 class _renderObject {
+  anim;
+
   gl;
   canvas;
   mainCam;
@@ -22,28 +25,28 @@ class _renderObject {
 
   defaultMaterialPattern;
   defaultMaterial;
-  
 
   input;
 
-  constructor (canvasId) {
+  constructor (anim, canvasId) {
+    this.anim = anim;
+
     this.init(canvasId)
   }
 
   updateFrameUBO() {
     let data = [].concat(
-      this.mainCam.loc.toArray4(this.timer.localTime),
-      this.mainCam.at.toArray4(this.timer.localDeltaTime),
-      this.mainCam.dir.toArray4(this.timer.globalTime),
-      this.mainCam.right.toArray4(this.timer.globalDeltaTime),
-      this.mainCam.up.toArray4(this.timer.FPS),      
+      this.mainCam.loc.toArray4(this.anim.timer.localTime),
+      this.mainCam.at.toArray4(this.anim.timer.localDeltaTime),
+      this.mainCam.dir.toArray4(this.anim.timer.globalTime),
+      this.mainCam.right.toArray4(this.anim.timer.globalDeltaTime),
+      this.mainCam.up.toArray4(this.anim.timer.FPS),      
     );
 
     this.frameUBO.update(new Float32Array(data));
   }
 
   init (canvasId) {
-    this.timer = new Timer();
     this.canvas = document.getElementById(canvasId);
     this.gl = this.canvas.getContext("webgl2");
     this.mainCam = camera();
@@ -72,16 +75,17 @@ class _renderObject {
       },
     "defMtl");
 
-    this.input = new input(this);
+    // this.input = new input(this);
   }
 
   drawFrame() {
-    this.timer.response();
     this.updateFrameUBO();
     this.gl.clear(this.gl.COLOR_BUFFER_BIT);
   }
 
   drawPrim(p, m) {
+    if (p.material == undefined)
+      p.material = this.defaultMaterial;
     if (p.material.mtlPtn.shd.id == null) {
       return;
     } else if (p.createData != null) {
@@ -131,6 +135,6 @@ class _renderObject {
   }
 }
 
-export function renderObject(canvasId) {
-  return new _renderObject(canvasId);
+export function renderObject(anim, canvasId) {
+  return new _renderObject(anim, canvasId);
 }

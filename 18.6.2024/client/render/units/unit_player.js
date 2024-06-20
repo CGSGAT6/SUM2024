@@ -1,9 +1,12 @@
 import { mat4 } from "../../math/mat4";
 import { vec3 } from "../../math/vec3";
-import { Platon } from "../res/figures";
+import { Platon, planePrim } from "../res/figures";
+import { image } from "../res/image";
+import { material } from "../res/materials";
+import { texture } from "../res/textures";
 import { _unit } from "./units";
 
-class _unitPlayer extends _unit {
+export class _unitPlayer extends _unit {
   prim;
   pos;
   oldPos;
@@ -12,6 +15,11 @@ class _unitPlayer extends _unit {
   intervalStart;
   id;
   rnd;
+  testPlane;
+
+  static myPlayerMaterial = null;
+  static enemyPlayerMaterial = null;
+  
 
   constructor(rnd, id) {
     super(
@@ -22,19 +30,37 @@ class _unitPlayer extends _unit {
       unitClose
   );
   this.rnd = rnd;
-
+  this.id = id;
   }
 }
 
 function unitInit() {
-  this.prim = Platon.cubeCreate(this.rnd.defaultMaterial, 0.47 / 2);
+  if (_unitPlayer.enemyPlayerMaterial == null) {
+    _unitPlayer.enemyPlayerMaterial = material(
+      this.rnd.defaultMaterialPattern,
+      {
+        "ka":vec3(0.90, 0.08, 0.30),
+        "kd":vec3(0.8, 0.1, 0.1),
+        "ks":vec3(0.727811, 0.626959, 0.626959),
+        "ph":76.8,
+        "trans":0,
+      },
+    "enemyPlayerMaterial");
+
+    let img = image("bin/A.png");
+    let tex = texture(this.rnd, img);
+    _unitPlayer.enemyPlayerMaterial.textureAttach(tex);
+  }
+
+  this.prim = Platon.cubeCreate(this.rnd.defaultMaterialPattern, 0.47 / 2);
+  this.prim.setMaterial(_unitPlayer.enemyPlayerMaterial);
   this.pos = vec3(0);
   this.oldPos = vec3(0);
   this.interval = 50;
 }
 
 function unitResponse() {
-  let d = (this.rnd.timer.globalTime - this.intervalStart) * 1000 / this.interval;
+  let d = (this.rnd.anim.timer.globalTime - this.intervalStart) * 1000 / this.interval;
 
   this.curPos = this.oldPos.mulNum(1 - d).addVec(this.pos.mulNum(d));
 }

@@ -17,7 +17,7 @@ export class _unit {
     else
       this.render = render;
     if (render == undefined)
-      this.renser = unitRender;
+      this.render = unitRender;
     else
       this.response = response;
     if (close == undefined)
