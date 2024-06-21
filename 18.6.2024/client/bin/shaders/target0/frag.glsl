@@ -4,9 +4,7 @@ precision highp float;
 #define D2R(a) a * 3.1415 / 180.0
 
 in vec3 DrawPos;
-in vec3 DrawNormal;
-in vec2 DrawTexCoord;
-
+in vec2 DrawTexCoords;
 
 uniform MaterialUBO
 {
@@ -52,7 +50,13 @@ uniform FrameUBO
 #define IsTexture7 Tex[1].w
 
 uniform sampler2D tex0;
-
+uniform sampler2D tex1;
+uniform sampler2D tex2;
+uniform sampler2D tex3;
+uniform sampler2D tex4;
+uniform sampler2D tex5;
+uniform sampler2D tex6;
+uniform sampler2D tex7;
 
 out vec4 OutColor;
 
@@ -112,51 +116,9 @@ vec3 Shade( vec3 P, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec
   return color;
 } /* End of 'Shade' function */
 
-
-
 void main( void )
 {
-/*  vec3 L = normalize(vec3(0, 1, 3));
-  vec3 N = normalize(faceforward(normalize(DrawNormal), -L, normalize(DrawNormal)));
-  //int n = Julia(DrawPos.xy, vec2(0.35, 0.39) + vec2(sin(Time / 10.0 * 2.0) / 47.0, cos(Time / 10.0 * 2.0) * 0.47));
-
-  vec3 P = vec3(sin(D2R(Time * 90.0)) * 4.0, 3.0, cos(D2R(Time * 90.0)) * 4.0);
-  float d = length(P - DrawPos);
-  vec3 R = normalize(P - DrawPos);
-  float cc = 0.1, cl = 0.1, cq = 0.1;
-  float k = min(1.0, 2.0 / (cc + cl * d + cq * d * d));
-  vec3 LC = vec3(0.7, 0.6, 0.1);
-
-  vec3 col = vec3(0.47, 0.30, 0.7) + LC * dot(N, R);
-  */
-
-  vec3 L = normalize(DrawPos - CamLoc);
-  vec3 N = normalize(faceforward(normalize(DrawNormal), L, normalize(DrawNormal)));
-  //int n = Julia(DrawPos.xy, vec2(0.35, 0.39) + vec2(sin(Time / 10.0 * 2.0) / 47.0, cos(Time / 10.0 * 2.0) * 0.47));
-
-  vec3 P = vec3(sin(D2R(Time * 90.0)) * 4.0, 3.0, cos(D2R(Time * 90.0)) * 4.0);
-  float d = length(P - DrawPos);
-  vec3 R = normalize(P - DrawPos);
-  float cc = 0.1, cl = 0.1, cq = 0.1;
-  float k = min(1.0, 2.0 / (cc + cl * d + cq * d * d));
-  vec3 LC = vec3(1.0);//vec3(0.7, 0.6, 0.1);
-
-  vec3 tc = texture(tex0, DrawTexCoord * 100.0).rgb;
-
-  //vec3 col = min(vec3(0.5), tc) + tc * dot(N, R);
-  vec3 col = tc;
-  col *= LC;
-  col *= k;
-
-  //col = vec3(float(n) / 255.0, float(n) / 150.0, float(n) / 100.0) * dot(N, L); 
-/*
-  vec3 P = vec3(sin(D2R(Time * 90.0)) * 2.0, 3.0, cos(D2R(Time * 90.0)) * 2.0);
-  vec3 LC = vec3(0.7, 0.6, 0.1);
-  vec3 col = Shade(DrawPos, normalize(DrawNormal), Ka, Kd, Ks, Ph, P, LC);
-  
-  col = vec3(1.0, 1.0, 1.0);
-*/
-
-  OutColor = vec4(col, 1.0);
+  //OutColor = vec4(DrawTexCoords.xyx, 1.0);
+  OutColor = vec4(DrawPos.yxx, 1.0);
   //OutColor = vec4(N, 1);
 }

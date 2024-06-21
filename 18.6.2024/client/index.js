@@ -61,7 +61,6 @@ function initializeCommunication() {
 
     } else if (msg.type == "connect") {
         playerAdd(msg, vec3(0));
-
         console.log(players);
     } else if (msg.type == "update") {
       for (let i in msg.pos) {
@@ -80,17 +79,6 @@ function initializeCommunication() {
 function main() {
   initializeCommunication();
 
-  inp = document.querySelector("#test");
-  inp.addEventListener("input", () => {
-    socket.send(JSON.stringify({
-      type: "rotate",
-      value: inp.value,
-    }));
-  })
-
-  
-
-  let x = 0, y = 0, z = 0;
   const draw = () => {
     
     for (let p of players) {
@@ -116,7 +104,6 @@ function main() {
 
 
     myAnim.unitsRender();
-
     window.requestAnimationFrame(draw);
     };
 

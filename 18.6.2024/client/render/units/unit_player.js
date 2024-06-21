@@ -46,14 +46,9 @@ function unitInit() {
         "trans":0,
       },
     "enemyPlayerMaterial");
-
-    let img = image("bin/A.png");
-    let tex = texture(this.rnd, img);
-    _unitPlayer.enemyPlayerMaterial.textureAttach(tex);
   }
 
-  this.prim = Platon.cubeCreate(this.rnd.defaultMaterialPattern, 0.47 / 2);
-  this.prim.setMaterial(_unitPlayer.enemyPlayerMaterial);
+  this.prim = Platon.dodecCreate(_unitPlayer.enemyPlayerMaterial, 0.47 / 2);
   this.pos = vec3(0);
   this.oldPos = vec3(0);
   this.interval = 50;

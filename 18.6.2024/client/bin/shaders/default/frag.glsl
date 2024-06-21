@@ -52,7 +52,13 @@ uniform FrameUBO
 uniform sampler2D tex0;
 
 
-out vec4 OutColor;
+layout(location = 0) out vec4 OutColor;
+layout(location = 1) out vec4 OutNormal;
+layout(location = 2) out vec4 OutPos;
+layout(location = 3) out vec4 OutKa;
+layout(location = 4) out vec4 OutKd;
+layout(location = 5) out vec4 OutKs;
+
 
 /* Phong light model shading function.
  * ARGUMENTS:
@@ -156,5 +162,9 @@ void main( void )
   vec3 tc = texture(tex0, tx).rgb;
 
   OutColor = vec4(col, 1.0);
-  //OutColor = vec4(N, 1);
+  OutKa = vec4(Ka, 1.0);
+  OutKd = vec4(Kd, 1.0);
+  OutKs = vec4(Ks, 1.0);
+  OutNormal = vec4(N, 1.0);
+  OutPos = vec4(DrawPos, 1.0);
 }

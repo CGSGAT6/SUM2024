@@ -44,15 +44,14 @@ function unitInit() {
   
   Mtl.textureAttach(tex);
 
-  this.testPlane = planePrim(MtlPtn, 1);
-  this.testPlane.setMaterial(Mtl);
+  this.testPlane = planePrim(Mtl, 1);
 }
 
 function unitResponse() {
 }
 
 function unitRender() {
-  this.rnd.drawPrim(this.testPlane, mat4().rotateX(90));
+  this.rnd.drawPrim(this.testPlane, mat4().scale(vec3(1000)));
 }
 
 function unitClose() {

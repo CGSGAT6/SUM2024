@@ -7,13 +7,14 @@ class _prim {
   type;
   primUBO;
   mtlPtn;
+  material;
   
   createData = {};
 
   create() {
-    let gl = this.mtlPtn.shd.glDrawingContext;
+    let gl = this.material.mtlPtn.shd.glDrawingContext;
     
-    let vertFormat = this.mtlPtn.vertexFormat;
+    let vertFormat = this.material.mtlPtn.vertexFormat;
     //  = [
     //   {name : "Position",
     //    size : 12},
@@ -28,7 +29,7 @@ class _prim {
 
     this.noofV = this.createData.vertexes.length / (vertSize / 4);
 
-    ///console.log(mtlPtn.shd);
+    ///console.log(material.mtlPtn.shd);
 
     // vertex buffer
     this.vertexBuffer = gl.createBuffer();
@@ -49,10 +50,10 @@ class _prim {
 
     let allSize = 0;
     for (let i in vertFormat) {
-      let findedAttr = this.mtlPtn.shd.attrs["In" + vertFormat[i].name];
+      let findedAttr = this.material.mtlPtn.shd.attrs["In" + vertFormat[i].name];
 
       if (findedAttr != undefined) {
-        let attrLoc = this.mtlPtn.shd.attrs["In" + vertFormat[i].name].loc;
+        let attrLoc = this.material.mtlPtn.shd.attrs["In" + vertFormat[i].name].loc;
 
         if (attrLoc != -1) {
           gl.vertexAttribPointer(attrLoc, vertFormat[i].size / 4, gl.FLOAT, false, vertSize, allSize);
@@ -67,32 +68,28 @@ class _prim {
 
   }
 
-  constructor(mtlPtn, type, vertexes, indexes) {
-    this.mtlPtn = mtlPtn;
+  constructor(material, type, vertexes, indexes) {
+    this.material = material;
     this.createData.vertexes = vertexes;
     this.createData.indexes = indexes;
     
     if (type == "triangles")
-      this.type = mtlPtn.shd.glDrawingContext.TRIANGLES;
+      this.type = material.mtlPtn.shd.glDrawingContext.TRIANGLES;
     else if (type == "triangle strip")
-      this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_STRIP;
+      this.type = material.mtlPtn.shd.glDrawingContext.TRIANGLE_STRIP;
     else if (type == "line strip")
-      this.type = mtlPtn.shd.glDrawingContext.LINE_STRIP;
+      this.type = material.mtlPtn.shd.glDrawingContext.LINE_STRIP;
     else if (type == "lines")
-      this.type = mtlPtn.shd.glDrawingContext.LINES;
+      this.type = material.mtlPtn.shd.glDrawingContext.LINES;
     else if (type == "triangle fun")
-      this.type = mtlPtn.shd.glDrawingContext.TRIANGLE_FUN;
+      this.type = material.mtlPtn.shd.glDrawingContext.TRIANGLE_FUN;
     else
-      this.type = mtlPtn.shd.glDrawingContext.POINTS; 
-  }
-
-  setMaterial (material) {
-    this.material = material;
+      this.type = material.mtlPtn.shd.glDrawingContext.POINTS; 
   }
 }
 
-export function prim(mtlPtn, type, vertexes, indexes) {
-  return new _prim(mtlPtn, type, vertexes, indexes);
+export function prim(material, type, vertexes, indexes) {
+  return new _prim(material, type, vertexes, indexes);
 }
 
 // phong:

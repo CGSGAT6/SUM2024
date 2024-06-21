@@ -5,7 +5,7 @@ import { prim } from "./prim";
 import { vertex } from "./vertex";
 
 export class Platon {
-  static cubeCreate(mtlPtn, size) {
+  static cubeCreate(material, size) {
     let pnts = [
       vec3(-1, -1, -1), vec3(1, -1, -1),
       vec3(1, -1, 1), vec3(-1, -1, 1),
@@ -45,10 +45,10 @@ export class Platon {
   
     let vertexArr = vertex().createVertexArray(vert);
   
-    return prim(mtlPtn, "triangle strip", vertexArr, uInd);
+    return prim(material, "triangle strip", vertexArr, uInd);
   }
   
-  static octCreate(mtlPtn, size) {
+  static octCreate(material, size) {
     let pnts = [
       vec3(0, 1, 0), vec3(0, 0, 1),
       vec3(-1, 0, 0), vec3(0, 0, -1),
@@ -78,11 +78,11 @@ export class Platon {
   
     let vertexArr = vertex().createVertexArray(vert);
   
-    return prim(mtlPtn, "triangles", vertexArr);
+    return prim(material, "triangles", vertexArr);
   
   }
   
-  static tetrCreate(mtlPtn, size) {
+  static tetrCreate(material, size) {
     const sqrt3 = Math.sqrt(3);
     const sqrt23 = Math.sqrt(2 / 3);
   
@@ -101,10 +101,10 @@ export class Platon {
   
     vt = vertex().createVertexArray(vt);
   
-    return prim(mtlPtn, "triangles", vt);
+    return prim(material, "triangles", vt);
   }
   
-  static icoCreate(mtlPtn, size) {
+  static icoCreate(material, size) {
     const 
       sqrt5d2 = Math.sqrt(5) / 2,
       sin72 = Math.sin(72 * Math.PI / 180),
@@ -157,10 +157,10 @@ export class Platon {
     
     let vertexArr = vertex().createVertexArray(vert);
   
-    return prim(mtlPtn, "triangles", vertexArr);
+    return prim(material, "triangles", vertexArr);
   }
   
-  static dodecCreate(mtlPtn, size) {
+  static dodecCreate(material, size) {
     const 
       sqrt5d2 = Math.sqrt(5) / 2,
       sin72 = Math.sin(72 * Math.PI / 180),
@@ -234,10 +234,10 @@ export class Platon {
     
     let vertexArr = vertex().createVertexArray(vert);
   
-    return prim(mtlPtn, "triangles", vertexArr);
+    return prim(material, "triangles", vertexArr);
   }
   
-  static truncedIcoCreate(mtlPtn, size) {
+  static truncedIcoCreate(material, size) {
     const 
       sqrt5d2 = Math.sqrt(5) / 2,
       sin72 = Math.sin(72 * Math.PI / 180),
@@ -376,7 +376,7 @@ export class Platon {
     
     let vertexes = vertex().createVertexArray(vert);
 
-    return prim(mtlPtn, "triangles", vertexes);
+    return prim(material, "triangles", vertexes);
   }
 }
 
@@ -401,7 +401,7 @@ let scdMtlPtn = null;
 let scdMtl = null;
 
 
-export function planePrim(mtlPtn, size) {
+export function planePrim(material, size) {
   let vertexes = [
     -size, 0, size, 0, 1, 0, 0, 0,
     -size, 0, -size, 0, 1, 0, 0, 1, 
@@ -409,5 +409,5 @@ export function planePrim(mtlPtn, size) {
     size, 0, -size, 0, 1, 0, 1, 1,
   ]
 
-  return prim(mtlPtn, "triangle strip", vertexes);
+  return prim(material, "triangle strip", vertexes);
 }

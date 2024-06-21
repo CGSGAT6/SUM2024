@@ -5,6 +5,7 @@ import { input } from "./input.js";
 import { ubo_buffer } from "./res/buffers.js";
 import { materialPattern } from "./res/material_pattern.js";
 import { material } from "./res/materials.js";
+import { renderTarget } from "./target.js";
 import { Timer } from "./timer.js";
 
 
@@ -15,6 +16,7 @@ class _renderObject {
   anim;
 
   gl;
+  target0;
   canvas;
   mainCam;
   timer;
@@ -58,7 +60,8 @@ class _renderObject {
             date.getMilliseconds() / 1000;
     this.deltaTime = 0;
 
-    this.gl.clearColor(0.30, 0.47, 0.8, 1);
+    //this.gl.clearColor(0.30, 0.47, 0.8, 1);
+    this.gl.clearColor(19 / 255, 7 / 255, 54 / 255, 1);
 
     this.primUBO = ubo_buffer(this, "PrimUBO", 16 * 4 * 4, primUBOBindingPoint);
     this.frameUBO = ubo_buffer(this, "FrameUBO", 80, frameUBOBindingPoint);
@@ -75,23 +78,35 @@ class _renderObject {
       },
     "defMtl");
 
+    this.target0 = renderTarget(
+      this,
+      [
+        "Color",
+        "Normal",
+        "Pos",
+        "Ka",
+        "Kd",
+        "Ks",
+      ],
+      this.canvas.clientWidth,
+      this.canvas.clientHeight,
+      true,
+    );
     // this.input = new input(this);
   }
 
   drawFrame() {
+    this.target0.start();
     this.updateFrameUBO();
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+    //this.gl.clear(this.gl.COLOR_BUFFER_BIT);
   }
 
   drawPrim(p, m) {
-    if (p.material == undefined)
-      p.material = this.defaultMaterial;
     if (p.material.mtlPtn.shd.id == null) {
       return;
     } else if (p.createData != null) {
       p.create();
     }
-
 
     p.material.apply();
 
@@ -132,6 +147,29 @@ class _renderObject {
     } else {
       this.gl.drawArrays(p.type, 0, p.noofV);
     }
+  }
+
+  resize() {
+    const displayWidth  = this.canvas.clientWidth;
+    const displayHeight = this.canvas.clientHeight;
+    
+    const needResize = this.canvas.width  !== displayWidth ||
+                       this.canvas.height !== displayHeight;
+    
+    if (needResize) {
+      this.canvas.width  = displayWidth;
+      this.canvas.height = displayHeight;
+      
+      this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+
+      this.mainCam.setSize(displayWidth, displayHeight);
+
+      this.target0.resize(this.canvas.width, this.canvas.height);
+    }
+  }
+
+  frameEnd() {
+    this.target0.end();
   }
 }
 

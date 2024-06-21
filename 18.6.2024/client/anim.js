@@ -16,7 +16,7 @@ class _animationContext {
   }
 
   frameStart() {
-
+    this.rnd.resize();
     this.timer.response();
     console.log(this.timer.FPS);
     this.rnd.drawFrame();
@@ -32,6 +32,8 @@ class _animationContext {
     for (let unit of this.units) {
       unit.render();
     }
+
+    this.rnd.frameEnd();
   }
 
   unitAdd(unit) {

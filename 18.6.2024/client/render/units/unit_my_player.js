@@ -32,8 +32,7 @@ function unitInit() {
     "myPlayerMaterial");
   }
 
-  this.prim = Platon.truncedIcoCreate(this.rnd.defaultMaterialPattern, 0.47);
-  this.prim.setMaterial(_unitPlayer.myPlayerMaterial);
+  this.prim = Platon.truncedIcoCreate(_unitPlayer.myPlayerMaterial, 0.47 / 2);
   this.pos = vec3(0);
   this.oldPos = vec3(0);
   this.interval = 50;
