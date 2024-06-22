@@ -77,8 +77,6 @@ function initializeCommunication() {
 }
 
 function main() {
-  initializeCommunication();
-
   const draw = () => {
     
     for (let p of players) {
@@ -106,9 +104,7 @@ function main() {
     myAnim.unitsRender();
     window.requestAnimationFrame(draw);
     };
-
-
-
+    
   //myAnim.rnd = renderObject("can")
   myAnim = animationContext("can");
   // mainInput = new input(myAnim.rnd);
@@ -127,11 +123,13 @@ function main() {
   myAnim.rnd.mainCam.setSize(1000, 1000);
   //let trunc = Platon.truncedIcoCreate(defMaterial, 0.47);
 
+  initializeCommunication();
+
+
   myAnim.unitAdd(unitPlane(myAnim.rnd));
 
   let testUnit = unitPlayer(myAnim.rnd, 0);
   testUnit.init();
-
   draw();
 }
 

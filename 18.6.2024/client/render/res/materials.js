@@ -55,10 +55,11 @@ class _material {
 
     for (let i in this.textureFlags) {
       if (this.textureFlags[i]) {
-        this.gl.activeTexture(this.gl.TEXTURE0 + Number(i));
-
-        this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[i].id);
-
+        if (this.mtlPtn.shd.uniforms["tex" + i]) {
+          this.gl.activeTexture(this.gl.TEXTURE0 + Number(i));
+          this.gl.bindTexture(this.gl.TEXTURE_2D, this.textures[i].id);
+          this.gl.uniform1i(this.mtlPtn.shd.uniforms["tex" + i].loc, Number(i));
+        }
       }
     }
   }

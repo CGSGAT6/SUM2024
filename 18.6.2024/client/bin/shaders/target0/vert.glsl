@@ -20,6 +20,7 @@ void main( void )
   
   DrawPos = vec3(vrtx[gl_VertexID], -1);
 
-  gl_Position = vec4(vrtx[gl_VertexID], -1, 1);
+  //gl_Position = vec4(vrtx[gl_VertexID], -1, 1);
+  gl_Position = vec4(InPosition, 1);
   DrawTexCoords = InTexCoords;
 }

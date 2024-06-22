@@ -2,7 +2,6 @@ import { materialPattern } from "./res/material_pattern";
 import { material } from "./res/materials";
 import { prim } from "./res/prim";
 import { texture } from "./res/textures";
-import { vertex } from "./res/vertex";
 
 class _renderTarget {
   gl;
@@ -59,7 +58,7 @@ class _renderTarget {
     this.idFBO = this.gl.createFramebuffer();
 
     this.screenFBO = this.gl.getParameter(this.gl.FRAMEBUFFER_BINDING);
-    /*this.gl.clearBufferfv(this.gl.COLOR, 0, new Float32Array([0, 0, 0, 0]));*/
+    //this.gl.clearBufferfv(this.gl.COLOR, 0, new Float32Array([0, 0, 0, 0]));
 
     // bind frame buffer
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.idFBO);
@@ -69,7 +68,7 @@ class _renderTarget {
       let tex = texture(
         rnd,
         {
-          name: attachments[i],
+          name: "In" + attachments[i],
           width: width,
           height: height,
         },
@@ -93,13 +92,15 @@ class _renderTarget {
     this.depthBuffer.tex = texture(
       rnd,
       {
-        name: "depth",
+        name: "InDepth",
         width: width,
         height: height,
       },
       "depth",
     );
-   
+
+    this.trgMtl.textureAttach(this.depthBuffer.tex);
+
     this.gl.framebufferTexture2D(
       this.gl.FRAMEBUFFER,
       this.gl.DEPTH_ATTACHMENT,
@@ -119,12 +120,6 @@ class _renderTarget {
 
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.screenFBO);
     this.gl.viewport(0, 0, this.rnd.canvas.width, this.rnd.canvas.height);
-
-    //this.gl.clearBufferfv(this.gl.COLOR, 0, new Float32Array([0, 0, 0, 0]));
-    this.gl.clearColor(0, 0, 0, 1);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-
-
   }
 
   resize(width, height) {    
@@ -135,7 +130,7 @@ class _renderTarget {
       let tex = texture(
         this.rnd,
         {
-          name: this.names[i],
+          name: "In" + this.names[i],
           width: width,
           height: height,
         },
@@ -159,13 +154,16 @@ class _renderTarget {
     this.depthBuffer.tex = texture(
       this.rnd,
       {
-        name: "depth",
+        name: "InDepth",
         width: width,
         height: height,
       },
       "depth",
     );
+
+    this.trgMtl.textures[this.trgMtl.textures.length - 1] = this.depthBuffer.tex;
    
+
     this.gl.framebufferTexture2D(
       this.gl.FRAMEBUFFER,
       this.gl.DEPTH_ATTACHMENT,
@@ -178,28 +176,37 @@ class _renderTarget {
   }
 
   start() {
-    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.idFBO);
-    this.gl.viewport(0, 0, this.rnd.canvas.width, this.rnd.canvas.height);
-
-    for (let i in this.names) {
-      this.gl.clearBufferfv(this.gl.COLOR, Number(i), new Float32Array([0, 0, 0, 0]))
-    }
-    
-    this.gl.clearBufferfv(this.gl.DEPTH, 0, new Float32Array([1]))
-/*
-    this.gl.clearColor(0, 0, 0, 1);
-    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);*/
-  }
-
-  end() {
     this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.screenFBO);
     this.gl.viewport(0, 0, this.rnd.canvas.width, this.rnd.canvas.height);
 
     //this.gl.clearBufferfv(this.gl.COLOR, 0, new Float32Array([0, 0, 0, 0]));
+    this.gl.clearColor(19 / 255, 7 / 255, 54 / 255, 1);
+    this.gl.clear(this.gl.COLOR_BUFFER_BIT);
+ 
+
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.idFBO);
+    this.gl.viewport(0, 0, this.rnd.canvas.width, this.rnd.canvas.height);
+
+    /*
+    for (let i in this.names) {
+      this.gl.clearBufferfv(this.gl.COLOR, Number(i), new Float32Array([0, 0, 0, 0]))
+    }
+    
+    this.gl.clearBufferfv(this.gl.DEPTH, 0, new Float32Array([0]))*/
+
+
+
     this.gl.clearColor(0, 0, 0, 1);
+    this.gl.clearDepth(1);
     this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+  }
+
+  end() {
+    //this.gl.finish();
+    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.screenFBO);
 
     this.rnd.drawPrim(this.prim);
+    //this.gl.finish();
   }
 }
 

@@ -26,7 +26,8 @@ class _texture {
       this.type = rnd.gl.TEXTURE_2D;
       this.id = rnd.gl.createTexture();
       rnd.gl.bindTexture(this.type, this.id);
-      rnd.gl.texStorage2D(this.type, 1, rnd.gl.RGBA32F, nameURL.width, nameURL.height);
+      rnd.gl.texStorage2D(this.type, 1, rnd.gl.RGBA8, nameURL.width, nameURL.height);
+      // rnd.gl.texImage2D(this.type, 0, rnd.gl.RGBA, nameURL.width, nameURL.height, 0, rnd.gl.RGBA, rnd.gl.UNSIGNED_BYTE, null);
       rnd.gl.texParameteri(this.type, rnd.gl.TEXTURE_WRAP_S, rnd.gl.REPEAT);
       rnd.gl.texParameteri(this.type, rnd.gl.TEXTURE_WRAP_T, rnd.gl.REPEAT);
     } else if (textureType == "depth") {
@@ -34,7 +35,9 @@ class _texture {
       this.type = rnd.gl.TEXTURE_2D;
       this.id = rnd.gl.createTexture();
       rnd.gl.bindTexture(this.type, this.id);
+      
       rnd.gl.texStorage2D(this.type, 1, rnd.gl.DEPTH_COMPONENT24, nameURL.width, nameURL.height);
+      //rnd.gl.texStorage2D(this.type, 1, rnd.gl.UNSIGNED_INT_24_8, nameURL.width, nameURL.height);
       rnd.gl.texParameteri(this.type, rnd.gl.TEXTURE_WRAP_S, rnd.gl.REPEAT);
       rnd.gl.texParameteri(this.type, rnd.gl.TEXTURE_WRAP_T, rnd.gl.REPEAT);
     }

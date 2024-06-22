@@ -118,7 +118,23 @@ vec3 Shade( vec3 P, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec
 
 void main( void )
 {
-  //OutColor = vec4(DrawTexCoords.xyx, 1.0);
-  OutColor = vec4(DrawPos.yxx, 1.0);
+  vec3 col;
+  float k = 5.0;
+
+  if (DrawTexCoords.x > 0.15 * 5.0)
+    col = texture(tex0, DrawTexCoords).rgb;
+  else if (DrawTexCoords.x > 0.15 * 4.0)
+    col = texture(tex1, DrawTexCoords).rgb;
+  else if (DrawTexCoords.x > 0.15 * 3.0)
+    col = texture(tex2, DrawTexCoords).rgb;
+  else if (DrawTexCoords.x > 0.15 * 2.0)
+    col = texture(tex3, DrawTexCoords).rgb;
+  else if (DrawTexCoords.x > 0.15)
+    col = texture(tex4, DrawTexCoords).rgb;
+  else if (DrawTexCoords.x > 0.07)
+    col = texture(tex6, DrawTexCoords).rgb;
+  
+  //col = texture(tex0, DrawTexCoords).rgb;
+  OutColor = vec4(col, 1.0);
   //OutColor = vec4(N, 1);
 }

@@ -30,6 +30,8 @@ class _renderObject {
 
   input;
 
+  depthExt;
+
   constructor (anim, canvasId) {
     this.anim = anim;
 
@@ -51,6 +53,8 @@ class _renderObject {
   init (canvasId) {
     this.canvas = document.getElementById(canvasId);
     this.gl = this.canvas.getContext("webgl2");
+    //this.depthExt = this.gl.getExtension("WEBGL_depth_texture");
+
     this.mainCam = camera();
 
     this.gl.enable(this.gl.DEPTH_TEST);
