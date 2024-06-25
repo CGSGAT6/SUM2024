@@ -9,6 +9,7 @@ import { unitPlayer } from "./render/units/unit_player.js";
 import { unitMyPlayer } from "./render/units/unit_my_player.js";
 import { animationContext } from "./anim.js";
 import { unitPlane } from "./render/units/unit_test.js";
+import { unitBullet } from "./render/units/unit_bullet.js";
 
 
 let testRotate = 0;
@@ -17,6 +18,8 @@ let socket;
 let inp;
 let players = [];
 let playerId = -1;
+
+let bullets = [];
 
 //let myAnim.rnd;
 let myAnim;
@@ -41,6 +44,16 @@ function playerAdd(msg, pos) {
   players.push(player);
 }
 
+function bulletAdd(msg) {
+  let bullet;
+  
+  bullet = unitBullet(myAnim.rnd, msg.pos, msg.dir);
+
+  bullets.push(bullet);
+
+  myAnim.unitAdd(bullet);
+}
+
 function initializeCommunication() {
   socket = new WebSocket("ws://localhost:3030");
 
@@ -55,23 +68,53 @@ function initializeCommunication() {
     if (msg.type == "hist") {
       playerId = msg.id;        
       for (let m in msg.poses) {
-        playerAdd(msg.poses[m], msg.poses[m].pos);
+        if (msg.poses[m].valid == true) {
+          playerAdd(msg.poses[m], msg.poses[m].pos);
+        }
+        else
+          players.push(null);
       }
       console.log(playerId);
 
     } else if (msg.type == "connect") {
+      if (msg.valid)
         playerAdd(msg, vec3(0));
-        console.log(players);
+      else
+        players.push(null);
+    } else if (msg.type == "disconnect") {
+      if (players[msg.id] != undefined) {
+        players[msg.id].isActive = false;
+        players[msg.id] = null;
+      }
     } else if (msg.type == "update") {
       for (let i in msg.pos) {
         if (players[i] != undefined) {
           players[i].oldPos = vec3(players[i].pos);
           players[i].pos = vec3(msg.pos[i]);
+          players[i].intervalStart = myAnim.timer.globalTime;
+          players[i].interval = msg.inter;
         }
       }
 
-      interStart = myAnim.timer.globalTime;
-      inter = msg.inter;
+      for (let i = 0; i < msg.startInd; i++) {
+        if (bullets[i] != undefined) { 
+          bullets[i].isActive = false;
+        }
+      }
+
+      bullets = bullets.slice(msg.startInd);
+
+      for (let i in msg.bullets) {
+        let ii = Number(i) + msg.startInd;
+        if (bullets[ii] != undefined) {
+          bullets[ii].oldPos = vec3(bullets[ii].pos);
+          bullets[ii].pos = vec3(msg.bullets[i].pos);
+          bullets[ii].intervalStart = myAnim.timer.globalTime;
+          bullets[ii].interval = msg.inter;
+        }
+      }
+    } else if (msg.type == "bulletAdd") {
+      bulletAdd(msg);
     }
   };
 }
@@ -79,10 +122,10 @@ function initializeCommunication() {
 function main() {
   const draw = () => {
     
-    for (let p of players) {
-      p.intervalStart = interStart;
-      p.interval = inter;
-    }
+    // for (let p of players) {
+    //   p.intervalStart = interStart;
+    //   p.interval = inter;
+    // }
 
     myAnim.unitsResponse();
 
@@ -93,10 +136,7 @@ function main() {
     if (playerId != -1 && playerId < players.length)
       pos = players[playerId].curPos;
 
-    let POI = pos.addVec(vec3(0, 0, 5));
-    let CamLoc = myAnim.rnd.mainCam.loc.addVec(POI.subVec(myAnim.rnd.mainCam.loc).mulNum(myAnim.rnd.anim.timer.localDeltaTime));//VecMulNum(VecSubVec(POI, AT6_RndCamLoc), Ani->DeltaTime));
-
-    myAnim.rnd.mainCam.set(pos.addVec(vec3(0, 0, 5)), pos, vec3(0, 1, 0));    
+    // myAnim.rnd.mainCam.set(pos.addVec(vec3(0, 0, 5)), pos, vec3(0, 1, 0));    
     //myAnim.rnd.mainCam.set(CamLoc, pos, vec3(0, 1, 0));    
 
 

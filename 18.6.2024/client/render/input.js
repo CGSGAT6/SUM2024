@@ -1,7 +1,3 @@
-import {camera} from "../math/camera.js";
-import { vec3 } from "../math/vec3.js";
-import { mat4 } from "../math/mat4.js";
-
 const D2R = degrees => degrees * Math.PI / 180;
 const R2D = radians => radians * 180 / Math.PI;
 
@@ -25,10 +21,12 @@ export class input {
      rnd.canvas.addEventListener('touchend', (e) => this.onTouchEnd(e));
    }
    
+   let m = document.getElementById("bod");
    
    window.addEventListener('keydown', (e) => this.onKeyDown(e));
    window.addEventListener('keyup', (e) => this.onKeyUp(e));
-   
+   m.addEventListener('keypress', (e) => console.log(e));
+
    this.mX = 0;
    this.mY = 0;
    this.mZ = 0;
@@ -60,6 +58,7 @@ export class input {
      "KeyA",
      "Numpad0", "NumpadMultiply",
      "F1",
+     "KeyQ", "KeyE",
    ].forEach(key => {
      this.keys[key] = 0;
      this.keysOld[key] = 0;
@@ -206,8 +205,14 @@ export class input {
    this.mDx = dx;
    this.mDy = dy;
    this.mDz = 0;
+  
+   this.mX = e.clientX;
+   this.mY = e.clientY;
+   
+   /*
    this.mX += dx;
    this.mY += dy;
+   */
  } // End of 'onMouseMove' function
 
  onMouseWheel(e) {

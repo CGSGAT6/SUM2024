@@ -78,12 +78,20 @@ class _vec3 {
 
   // Vector normalizing function
   normalize() {
-    return this.divNum(this.len());
+    let l = this.len();
+
+    if (l == 0)
+      return vec3(0);
+
+    return vec3(this.x /= l, this.y /= l, this.z /= l);
   } // End of 'normalize' function
 
   // Vector setting normalize function
   setNormalize() {
     let l = this.len();
+
+    if (l == 0)
+      return;
 
     this.x /= l;
     this.y /= l;

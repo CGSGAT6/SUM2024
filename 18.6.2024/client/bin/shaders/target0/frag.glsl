@@ -80,61 +80,39 @@ out vec4 OutColor;
  *       vec3 LightCol
  * RETURNS: lighted fragment.
  */
-vec3 Shade( vec3 P, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec3 LightPos, vec3 LightCol )
+vec3 Shade( vec3 Pos, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec3 LightPos, vec3 LightCol )
 {
-  vec3 V = normalize(P - CamLoc); 	
-  vec3 L = normalize(LightPos - P);
-  float
-    cc = 0.2,
-    cl = 0.1,
-    cq = 0.3,    	
-    d = length(LightPos - P),
-    att = min(1.0, 1.0 / (cc + cl * d + cq * d * d));
-  
-  N = faceforward(N, V, N);                                              
-   
-  // Diffuse lighting
-  vec3 color = min(vec3(0.1), MtlKa);
-  //color = vec3(1.0);
-  //color = vec3(1.0);
-  color += MtlKd * max(0.0, dot(N, L));
+  vec3 L = normalize(Pos - CamLoc);
+  vec3 Nn = normalize(faceforward(normalize(N), L, normalize(N)));
+  //int n = Julia(DrawPos.xy, vec2(0.35, 0.39) + vec2(sin(Time / 10.0 * 2.0) / 47.0, cos(Time / 10.0 * 2.0) * 0.47));
 
-  // Specular
-  vec3 R = reflect(-V, N);
-  //color += MtlKs * 0.0;
-  vec3 AddC = MtlKs * min(max(0.0, pow(dot(R, -L), 47.0)), 1.0);
+  vec3 P = LightPos;//= vec3(sin(D2R(Time * 90.0)) * 4.0, 3.0, cos(D2R(Time * 90.0)) * 4.0);
+  float d = length(P - Pos);
+  vec3 R = normalize(P - Pos);
+  float cc = 0.1, cl = 0.1, cq = 0.1;
+  float k = min(1.0, 2.0 / (cc + cl * d + cq * d * d));
 
-  color += AddC;
-  //color = vec3(abs(max(0.0, pow(dot(R, -L), MtlPh))));
-  // Distance depended lighting   
- 
+  vec3 col = min(vec3(0.5), MtlKa) + MtlKd * dot(Nn, R);
+  col *= LightCol;
+  col *= k;
 
-  color *= att;
-
-  color *= LightCol;
-
-  return color;
+  return col;
 } /* End of 'Shade' function */
 
 void main( void )
 {
-  vec3 col;
   float k = 5.0;
 
-  if (DrawTexCoords.x > 0.15 * 5.0)
-    col = texture(tex0, DrawTexCoords).rgb;
-  else if (DrawTexCoords.x > 0.15 * 4.0)
-    col = texture(tex1, DrawTexCoords).rgb;
-  else if (DrawTexCoords.x > 0.15 * 3.0)
-    col = texture(tex2, DrawTexCoords).rgb;
-  else if (DrawTexCoords.x > 0.15 * 2.0)
-    col = texture(tex3, DrawTexCoords).rgb;
-  else if (DrawTexCoords.x > 0.15)
-    col = texture(tex4, DrawTexCoords).rgb;
-  else if (DrawTexCoords.x > 0.07)
-    col = texture(tex6, DrawTexCoords).rgb;
-  
-  //col = texture(tex0, DrawTexCoords).rgb;
+  vec3 Color = texture(tex0, DrawTexCoords).rgb;
+  vec3 Normal = texture(tex1, DrawTexCoords).rgb;
+  vec3 Pos = texture(tex2, DrawTexCoords).rgb;
+  vec3 MapKa = texture(tex3, DrawTexCoords).rgb;
+  vec3 MapKd = texture(tex4, DrawTexCoords).rgb;
+
+  vec3 LP = vec3(sin(D2R(Time * 90.0)) * 4.0, cos(D2R(Time * 90.0)) * 4.0, 3.0);
+  //vec3 LP = CamAt + vec3(0, 0, 5);
+
+  vec3 col = Shade(Pos, Normal, MapKa, MapKd, vec3(0), 47.0, LP, vec3(1));
+
   OutColor = vec4(col, 1.0);
-  //OutColor = vec4(N, 1);
 }

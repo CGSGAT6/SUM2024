@@ -116,6 +116,12 @@ vec3 Shade( vec3 P, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec
 } /* End of 'Shade' function */
 
 
+float my_mod( float a, float b )
+{
+  float n = floor(a / b);
+
+  return a - n * b;
+}
 
 void main( void )
 {
@@ -160,9 +166,12 @@ void main( void )
   col = vec3(1.0, 1.0, 1.0);
 */
 
+//  vec3 vc = vec3(floor(my_mod(DrawPos.y, 2.0) * 10.0) / 10.0, floor(my_mod(DrawPos.x, 2.0) * 10.0) / 30.0, 0);
+
+  vec4 vc = vec4(247.0 / 225.0, 235.0 / 225.0, 188.0 / 225.0, 1.0);
   OutColor = vec4(col, 1.0);
-  OutKa = vec4(Ka, 1.0);
-  OutKd = vec4(Kd, 1.0);
+  OutKa = vec4(vc);
+  OutKd = vec4(vc);
   OutKs = vec4(Ks, 1.0);
   OutNormal = vec4(N, 1.0);
   OutPos = vec4(DrawPos, 1.0);

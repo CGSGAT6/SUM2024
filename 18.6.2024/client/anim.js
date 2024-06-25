@@ -16,21 +16,29 @@ class _animationContext {
   }
 
   frameStart() {
+    this.input.reset();
     this.rnd.resize();
     this.timer.response();
-    console.log(this.timer.FPS);
     this.rnd.drawFrame();
   }
 
   unitsResponse() {
-    for (let unit of this.units) {
-      unit.response();
+    let toDel = [];
+    for (let u in this.units) {
+      if (this.units[u] != null) {
+        this.units[u].response();
+        if (!this.units[u].isActive)
+          this.units[u] = null;
+        toDel.push(u);
+      } 
     }
   }
 
   unitsRender() {
-    for (let unit of this.units) {
-      unit.render();
+    for (let u in this.units) {
+      if (this.units[u] != null) {
+        this.units[u].render();
+      }
     }
 
     this.rnd.frameEnd();

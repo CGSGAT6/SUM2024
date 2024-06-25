@@ -4,6 +4,7 @@ export class _unit {
   response;
   render;
   close;
+  isActive = true;
 
   constructor(name, init, response, render, close) {
     this.name = name;
