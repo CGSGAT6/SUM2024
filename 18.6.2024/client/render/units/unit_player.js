@@ -21,7 +21,7 @@ export class _unitPlayer extends _unit {
   static enemyPlayerMaterial = null;
   
 
-  constructor(rnd, id) {
+  constructor(rnd, id, playerName) {
     super(
       "Player " + id.toString(),
       unitInit,
@@ -31,6 +31,9 @@ export class _unitPlayer extends _unit {
   );
   this.rnd = rnd;
   this.id = id;
+  this.playerName = playerName;
+  this.deads = 0;
+  this.kills = 0;
   }
 }
 
@@ -68,6 +71,6 @@ function unitClose() {
   // do nothing
 }
 
-export function unitPlayer(rnd, id) {
-  return new _unitPlayer(rnd, id);
+export function unitPlayer(rnd, id, playerName) {
+  return new _unitPlayer(rnd, id, playerName);
 }

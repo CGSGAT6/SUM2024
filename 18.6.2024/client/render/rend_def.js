@@ -53,6 +53,7 @@ class _renderObject {
   init (canvasId) {
     this.canvas = document.getElementById(canvasId);
     this.gl = this.canvas.getContext("webgl2");
+    this.gl.getExtension("OES_texture_float");
     //this.depthExt = this.gl.getExtension("WEBGL_depth_texture");
 
     this.mainCam = camera();

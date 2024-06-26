@@ -143,7 +143,7 @@ void main( void )
   OutColor = vec4(0, 0, 0, 1.0);
   OutKa = vec4(AO, 1.0);
   // OutKd = vec4(Diff, 1.0);
-  OutKd = vec4(Diff, 1.0);
+  OutKd = vec4(Diff * AO, 1.0);
   OutKs = vec4(DrawPos - CamLoc, 1.0);
   OutNormal = vec4(N, 1.0);
   OutPos = vec4(DrawPos, 1.0);

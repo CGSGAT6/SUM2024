@@ -151,6 +151,7 @@ void main( void )
   //vec3 LP = CamAt + vec3(0, 0, 5);
 
   vec3 col = Shade(Pos, Normal, MapKa, MapKd, vec3(1, 0.47, 0.30), 47.0, vec3(1, 1, 1), -PsC);
+  col += sin(Normal) * cos(Normal) / 8.0;
 
   OutColor = vec4(col, 1.0);
 }

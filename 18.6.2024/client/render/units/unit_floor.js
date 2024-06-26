@@ -37,22 +37,29 @@ function unitInit() {
     },
     "planeMtl",
    )
-/*
-  let imgAO = image("bin/textures/ceramic_circle/1K-circle_ceramic_3-ao.jpg");
-  let texAO = texture(this.rnd, imgAO);
-  let imgDiff = image("bin/textures/ceramic_circle/1K-circle_ceramic_3-diffuse.jpg");
-  let texDiff = texture(this.rnd, imgDiff);
-  let imgN = image("bin/textures/ceramic_circle/1K-circle_ceramic_3-normal.jpg");
-  let texN = texture(this.rnd, imgN);
-*/
 
+  let imgAO = image("bin/textures/woodparquet/woodparquet_93_ambientocclusion-1K.png");
+  let texAO = texture(this.rnd, imgAO);
+  let imgDiff = image("bin/textures/woodparquet/woodparquet_93_basecolor-1K.png");
+  let texDiff = texture(this.rnd, imgDiff);
+  let imgN = image("bin/textures/woodparquet/woodparquet_93_normal-1K.png");
+  let texN = texture(this.rnd, imgN);
+
+  // let imgAO = image("bin/textures/ceramic_circle/1K-circle_ceramic_3-ao.jpg");
+  // let texAO = texture(this.rnd, imgAO);
+  // let imgDiff = image("bin/textures/ceramic_circle/1K-circle_ceramic_3-diffuse.jpg");
+  // let texDiff = texture(this.rnd, imgDiff);
+  // let imgN = image("bin/textures/ceramic_circle/1K-circle_ceramic_3-normal.jpg");
+  // let texN = texture(this.rnd, imgN);
+
+/*
   let imgAO = image("bin/textures/procedural_rocks/Rocks_ambientocclusion.jpg");
   let texAO = texture(this.rnd, imgAO);
   let imgDiff = image("bin/textures/procedural_rocks/Rocks_basecolor.jpg");
   let texDiff = texture(this.rnd, imgDiff);
   let imgN = image("bin/textures/procedural_rocks/Rocks_normal.jpg");
   let texN = texture(this.rnd, imgN);
-
+*/
   Mtl.textureAttach(texAO);
   Mtl.textureAttach(texDiff);
   Mtl.textureAttach(texN);

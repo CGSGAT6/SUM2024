@@ -17,8 +17,10 @@ let testRotate = 0;
 
 let socket;
 let inp;
-let players = [];
-let playerId = -1;
+//let players = [];
+let newPlayers = {};
+//let playerId = -1;
+let playerName = "";
 
 let bullets = [];
 
@@ -34,15 +36,21 @@ let inter;
 function playerAdd(msg, pos) {
   
   let player;
-  if (msg.id == playerId)
+ /* if (msg.id == playerId)
     player = unitMyPlayer(myAnim.rnd, socket, msg.id);
+  else
+    player = unitPlayer(myAnim.rnd, msg.id);*/
+
+  if (msg.name == playerName)
+    player = unitMyPlayer(myAnim.rnd, socket, msg.id, playerName);
   else
     player = unitPlayer(myAnim.rnd, msg.id);
 
   myAnim.unitAdd(player);
   player.pos = vec3(pos);
   player.oldPos = vec3(pos);  
-  players.push(player);
+  //players.push(player);
+  newPlayers[msg.name] = player;
 }
 
 function bulletAdd(msg) {
@@ -67,33 +75,41 @@ function initializeCommunication() {
     let msg = JSON.parse(event.data);
 
     if (msg.type == "hist") {
-      playerId = msg.id;        
+      playerName = msg.name;
       for (let m in msg.poses) {
-        if (msg.poses[m].valid == true) {
           playerAdd(msg.poses[m], msg.poses[m].pos);
-        }
-        else
-          players.push(null);
       }
-      console.log(playerId);
-
     } else if (msg.type == "connect") {
       if (msg.valid)
         playerAdd(msg, vec3(0));
       else
-        players.push(null);
+       ;// players.push(null);
     } else if (msg.type == "disconnect") {
-      if (players[msg.id] != undefined) {
+      /*if (players[msg.id] != undefined) {
         players[msg.id].isActive = false;
         players[msg.id] = null;
+      }*/
+      if (newPlayers[msg.name] != undefined) {
+        newPlayers[msg.name].isActive = false;
+        delete newPlayers[msg.name];
       }
     } else if (msg.type == "update") {
-      for (let i in msg.pos) {
-        if (players[i] != undefined) {
+      for (let i in msg.players) {
+        /*if (players[i] != undefined) {
           players[i].oldPos = vec3(players[i].pos);
           players[i].pos = vec3(msg.pos[i]);
           players[i].intervalStart = myAnim.timer.globalTime;
           players[i].interval = msg.inter;
+        }*/
+        if (newPlayers[msg.players[i].name] != undefined) {
+          newPlayers[msg.players[i].name].oldPos = vec3(newPlayers[msg.players[i].name].pos);
+          newPlayers[msg.players[i].name].pos = vec3(msg.players[i].pos);
+          newPlayers[msg.players[i].name].isDead = msg.players[i].isDead;
+          newPlayers[msg.players[i].name].isKill = msg.players[i].isKill;
+          newPlayers[msg.players[i].name].deads = msg.players[i].deads;
+          newPlayers[msg.players[i].name].kills = msg.players[i].kills;
+          newPlayers[msg.players[i].name].intervalStart = myAnim.timer.globalTime;
+          newPlayers[msg.players[i].name].interval = msg.inter;
         }
       }
 
@@ -106,6 +122,13 @@ function initializeCommunication() {
       bullets = bullets.slice(msg.startInd);
 
       for (let i in msg.bullets) {
+        if (bullets[i] == null) {
+          let ii = Number(i) + msg.startInd;
+          if (bullets[ii]) {  
+            bullets[ii].isActive = false;
+          }
+          
+        }
         let ii = Number(i) + msg.startInd;
         if (bullets[ii] != undefined) {
           bullets[ii].oldPos = vec3(bullets[ii].pos);
@@ -132,10 +155,6 @@ function main() {
 
     // drawing
     myAnim.frameStart();
-
-    let pos = vec3(0, 0, 0);
-    if (playerId != -1 && playerId < players.length)
-      pos = players[playerId].curPos;
 
     // myAnim.rnd.mainCam.set(pos.addVec(vec3(0, 0, 5)), pos, vec3(0, 1, 0));    
     //myAnim.rnd.mainCam.set(CamLoc, pos, vec3(0, 1, 0));    

@@ -12,9 +12,10 @@ class _unitMyPlayer extends _unitPlayer {
   angle = 0;
   oldM;  
   lastShot = 0;
+  statTable;
 
-  constructor(rnd, socket, id){
-    super(rnd, id);
+  constructor(rnd, socket, id, playerName){
+    super(rnd, id, playerName);
 
     this.socket = socket;
     this.init = unitInit;
@@ -47,6 +48,7 @@ function unitInit() {
   this.dir = vec3(0, 1, 0);
 
   this.oldM = vec3(0);
+  this.statTable = document.getElementById("stats");
 }
 
 function unitResponse() {
@@ -59,6 +61,7 @@ function unitResponse() {
             type:"bulletAdd",
             pos:this.curPos,
             dir:this.dir,
+            name:this.playerName,
           })
         );
         this.lastShot = true;
@@ -66,6 +69,7 @@ function unitResponse() {
   } else {
     this.lastShot = false;
   }
+
   /*
   let oldM = vec3(0, 1, 0);
   let newM = vec3(this.rnd.anim.input.mDx, this.rnd.anim.input.mDy, 0).normalize();
@@ -111,6 +115,7 @@ function unitResponse() {
           id:this.id,
           type:"move",
           move:this.move,
+          name:this.playerName,
         })
       );
 
@@ -125,17 +130,20 @@ function unitResponse() {
   this.rnd.mainCam.set(camLoc, this.curPos, this.dir);
   this.rnd.updateFrameUBO();
   //this.rnd.mainCam.set(vec3(0.30, 0.47, 0.8), this.curPos, this.dir);
+
+  if (this.isDead) {
+    this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr>`;
+  }
+  if (this.isKill) {
+    this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr>`;
+  }
 }
 
 function unitRender() {
-  let p = vec3(0).mulMatr(mat4().translate(this.curPos))
-  //let p = vec3(0).pointTransform(mat4().translate(this.curPos))
-  console.log(this.rnd.mainCam.loc.subVec(p));
-
   this.rnd.drawPrim(this.prim, (mat4().translate(this.curPos)));
   this.rnd.drawPrim(this.dirPrim, mat4().translate(this.curPos.addVec(this.dir)));
 }
 
-export function unitMyPlayer(rnd, socket, id) {
-  return new _unitMyPlayer(rnd, socket, id);
+export function unitMyPlayer(rnd, socket, id, playerName) {
+  return new _unitMyPlayer(rnd, socket, id, playerName);
 }
