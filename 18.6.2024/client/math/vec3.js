@@ -44,7 +44,7 @@ class _vec3 {
   } // End of 'subVec' function
 
   // Make vector negative vector
-  neg(vec) {
+  neg() {
     return vec3(-this.x, -this.y, -this.z);
   } // End of 'neg' function
 

@@ -63,7 +63,7 @@ wss.on("connection", async (ws) => {
   });
 
   
-  ws.on('close', (code, data) => {
+  ws.on("close", (code, data) => {
     //console.log('CLIENT DISCONNECTED: ', ws.id)
     players[ws.id].valid = false;
     for (const s of wss.clients) {

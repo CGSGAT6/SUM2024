@@ -52,6 +52,14 @@ uniform FrameUBO
 #define IsTexture7 Tex[1].w
 
 uniform sampler2D tex0;
+uniform sampler2D tex1;
+uniform sampler2D tex2;
+uniform sampler2D tex3;
+uniform sampler2D tex4;
+uniform sampler2D tex5;
+uniform sampler2D tex6;
+uniform sampler2D tex7;
+
 
 layout(location = 0) out vec4 OutColor;
 layout(location = 1) out vec4 OutNormal;
@@ -125,54 +133,18 @@ float my_mod( float a, float b )
 
 void main( void )
 {
-/*  vec3 L = normalize(vec3(0, 1, 3));
-  vec3 N = normalize(faceforward(normalize(DrawNormal), -L, normalize(DrawNormal)));
-  //int n = Julia(DrawPos.xy, vec2(0.35, 0.39) + vec2(sin(Time / 10.0 * 2.0) / 47.0, cos(Time / 10.0 * 2.0) * 0.47));
+  vec2 tc = DrawTexCoord * 1000.0;
 
-  vec3 P = vec3(sin(D2R(Time * 90.0)) * 4.0, 3.0, cos(D2R(Time * 90.0)) * 4.0);
-  float d = length(P - DrawPos);
-  vec3 R = normalize(P - DrawPos);
-  float cc = 0.1, cl = 0.1, cq = 0.1;
-  float k = min(1.0, 2.0 / (cc + cl * d + cq * d * d));
-  vec3 LC = vec3(0.7, 0.6, 0.1);
-
-  vec3 col = vec3(0.47, 0.30, 0.7) + LC * dot(N, R);
-  */
-
-  vec3 L = normalize(DrawPos - CamLoc);
-  vec3 N = normalize(faceforward(normalize(DrawNormal), L, normalize(DrawNormal)));
-  //int n = Julia(DrawPos.xy, vec2(0.35, 0.39) + vec2(sin(Time / 10.0 * 2.0) / 47.0, cos(Time / 10.0 * 2.0) * 0.47));
-
-  vec3 P = vec3(sin(D2R(Time * 90.0)) * 4.0, 3.0, cos(D2R(Time * 90.0)) * 4.0);
-  float d = length(P - DrawPos);
-  vec3 R = normalize(P - DrawPos);
-  float cc = 0.1, cl = 0.1, cq = 0.1;
-  float k = min(1.0, 2.0 / (cc + cl * d + cq * d * d));
-  vec3 LC = vec3(1.0);//vec3(0.7, 0.6, 0.1);
-
-  vec3 tc = texture(tex0, DrawTexCoord * 100.0).rgb;
-
-  //vec3 col = min(vec3(0.5), tc) + tc * dot(N, R);
-  vec3 col = tc;
-  col *= LC;
-  col *= k;
-
-  //col = vec3(float(n) / 255.0, float(n) / 150.0, float(n) / 100.0) * dot(N, L); 
-/*
-  vec3 P = vec3(sin(D2R(Time * 90.0)) * 2.0, 3.0, cos(D2R(Time * 90.0)) * 2.0);
-  vec3 LC = vec3(0.7, 0.6, 0.1);
-  vec3 col = Shade(DrawPos, normalize(DrawNormal), Ka, Kd, Ks, Ph, P, LC);
-  
-  col = vec3(1.0, 1.0, 1.0);
-*/
-
-//  vec3 vc = vec3(floor(my_mod(DrawPos.y, 2.0) * 10.0) / 10.0, floor(my_mod(DrawPos.x, 2.0) * 10.0) / 30.0, 0);
+  vec3 AO = texture(tex0, tc).rgb;
+  vec3 Diff = texture(tex1, tc).rgb;
+  vec3 N = texture(tex2, tc).rgb;
 
   vec4 vc = vec4(247.0 / 225.0, 235.0 / 225.0, 188.0 / 225.0, 1.0);
-  OutColor = vec4(col, 1.0);
-  OutKa = vec4(vc);
-  OutKd = vec4(vc);
-  OutKs = vec4(Ks, 1.0);
+  OutColor = vec4(0, 0, 0, 1.0);
+  OutKa = vec4(AO, 1.0);
+  // OutKd = vec4(Diff, 1.0);
+  OutKd = vec4(Diff, 1.0);
+  OutKs = vec4(DrawPos - CamLoc, 1.0);
   OutNormal = vec4(N, 1.0);
   OutPos = vec4(DrawPos, 1.0);
   //OutColor = vec4(N, 1);

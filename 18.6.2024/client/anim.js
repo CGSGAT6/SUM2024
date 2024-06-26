@@ -7,12 +7,17 @@ class _animationContext {
   input;
   rnd;
 
+  lastFPSupdate = 0;
+  windowTitle;
+
   units = [];
 
   constructor(canvasId) {
     this.rnd = renderObject(this, canvasId);
     this.input = new input(this.rnd);
     this.timer = new Timer();
+
+    this.windowTitle = document.getElementById("title");
   }
 
   frameStart() {
@@ -20,6 +25,11 @@ class _animationContext {
     this.rnd.resize();
     this.timer.response();
     this.rnd.drawFrame();
+
+    if (this.timer.globalTime - this.lastFPSupdate > 2) {
+      this.lastFPSupdate = this.timer.globalTime;
+      this.windowTitle.innerText = "FPS: " + this.timer.FPS;
+    }
   }
 
   unitsResponse() {

@@ -119,10 +119,19 @@ function unitResponse() {
 
   this.curPos = this.oldPos.mulNum(1 - d).addVec(this.pos.mulNum(d));
 
-  this.rnd.mainCam.set(this.curPos.addVec(vec3(0, 0, 5)), this.curPos, this.dir);
+  let camLoc = this.curPos.addVec(vec3(0, 0, 5).addVec(this.dir.neg().mulNum(4.7)));
+
+  //camLoc = this.curPos.addVec(vec3(0, 0, 5));
+  this.rnd.mainCam.set(camLoc, this.curPos, this.dir);
+  this.rnd.updateFrameUBO();
+  //this.rnd.mainCam.set(vec3(0.30, 0.47, 0.8), this.curPos, this.dir);
 }
 
 function unitRender() {
+  let p = vec3(0).mulMatr(mat4().translate(this.curPos))
+  //let p = vec3(0).pointTransform(mat4().translate(this.curPos))
+  console.log(this.rnd.mainCam.loc.subVec(p));
+
   this.rnd.drawPrim(this.prim, (mat4().translate(this.curPos)));
   this.rnd.drawPrim(this.dirPrim, mat4().translate(this.curPos.addVec(this.dir)));
 }

@@ -25,8 +25,8 @@ uniform FrameUBO
 
 #define CamLoc CamLocTime.rgb
 #define CamAt CamAtDeltaTime.rgb
-#define CamDirGlobal CamDirGlobalTime.rgb
-#define CamRightGlobal CamRightGlobalDeltaTime.rgb
+#define CamDir CamDirGlobalTime.rgb
+#define CamRight CamRightGlobalDeltaTime.rgb
 #define CamUp CamUpFPS.rgb
 #define Time CamLocTime.a
 #define DeltaTime CamAtDeltaTime.a
@@ -80,7 +80,7 @@ out vec4 OutColor;
  *       vec3 LightCol
  * RETURNS: lighted fragment.
  */
-vec3 Shade( vec3 Pos, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec3 LightPos, vec3 LightCol )
+/*vec3 Shade( vec3 Pos, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec3 LightPos, vec3 LightCol )
 {
   vec3 L = normalize(Pos - CamLoc);
   vec3 Nn = normalize(faceforward(normalize(N), L, normalize(N)));
@@ -92,12 +92,49 @@ vec3 Shade( vec3 Pos, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, v
   float cc = 0.1, cl = 0.1, cq = 0.1;
   float k = min(1.0, 2.0 / (cc + cl * d + cq * d * d));
 
-  vec3 col = min(vec3(0.5), MtlKa) + MtlKd * dot(Nn, R);
+  vec3 col = min(vec3(0.1), MtlKa) + MtlKd * dot(Nn, R);
   col *= LightCol;
   col *= k;
 
   return col;
+} *//* End of 'Shade' function */
+
+/* Phong light model shading function.
+ * ARGUMENTS:
+ *   - position:
+ *       vec3 P;
+ *   - normal:
+ *       vec3 N;
+ *   - diffuse:
+ *       vec3 Kd;
+ *   - specular:
+ *       vec3 Ks;
+ *   - shinnes:
+ *       float Ph;
+ * RETURNS: lighted fragment.
+ */
+vec3 Shade( vec3 P, vec3 N, vec3 MtlKa, vec3 MtlKd, vec3 MtlKs, float MtlPh, vec3 LightDir, vec3 PosSubCamLoc )
+{
+  vec3 V = normalize(PosSubCamLoc); 	
+  vec3 L = normalize(LightDir);
+  
+  N = faceforward(N, -L, N);
+  
+  // Diffuse lighting 
+  vec3 color = min(vec3(0.1), MtlKa);
+  
+  color += MtlKd * max(0.0, dot(N, L));
+  
+  /*color = vec3(max(0.0, dot(normalize(vec3(1, 1, 0)), L)));
+  return color;*/
+
+   // Specular
+  vec3 R = reflect(V, N);
+  //color += MtlKs * max(0.0, pow(dot(R, L), Ph));
+
+  return color;
 } /* End of 'Shade' function */
+
 
 void main( void )
 {
@@ -108,11 +145,12 @@ void main( void )
   vec3 Pos = texture(tex2, DrawTexCoords).rgb;
   vec3 MapKa = texture(tex3, DrawTexCoords).rgb;
   vec3 MapKd = texture(tex4, DrawTexCoords).rgb;
+  vec3 PsC = texture(tex5, DrawTexCoords).rgb;
 
   vec3 LP = vec3(sin(D2R(Time * 90.0)) * 4.0, cos(D2R(Time * 90.0)) * 4.0, 3.0);
   //vec3 LP = CamAt + vec3(0, 0, 5);
 
-  vec3 col = Shade(Pos, Normal, MapKa, MapKd, vec3(0), 47.0, LP, vec3(1));
+  vec3 col = Shade(Pos, Normal, MapKa, MapKd, vec3(1, 0.47, 0.30), 47.0, vec3(1, 1, 1), -PsC);
 
   OutColor = vec4(col, 1.0);
 }

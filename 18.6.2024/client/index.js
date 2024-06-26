@@ -10,6 +10,7 @@ import { unitMyPlayer } from "./render/units/unit_my_player.js";
 import { animationContext } from "./anim.js";
 import { unitPlane } from "./render/units/unit_test.js";
 import { unitBullet } from "./render/units/unit_bullet.js";
+import { unitFloor } from "./render/units/unit_floor.js";
 
 
 let testRotate = 0;
@@ -166,10 +167,7 @@ function main() {
   initializeCommunication();
 
 
-  myAnim.unitAdd(unitPlane(myAnim.rnd));
-
-  let testUnit = unitPlayer(myAnim.rnd, 0);
-  testUnit.init();
+  myAnim.unitAdd(unitFloor(myAnim.rnd));
   draw();
 }
 
