@@ -71,7 +71,7 @@ function unitResponse() {
 }
 
 function unitRender() {
-  this.rnd.drawPrim(this.testPlane, mat4().rotateX(90).mulMatr(mat4().scale(vec3(1000))));
+  this.rnd.drawPrim(this.testPlane, mat4().rotateX(90).mulMatr(mat4().scale(vec3(10))));
 }
 
 function unitClose() {

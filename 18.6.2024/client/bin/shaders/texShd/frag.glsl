@@ -133,7 +133,7 @@ float my_mod( float a, float b )
 
 void main( void )
 {
-  vec2 tc = DrawTexCoord * 1000.0;
+  vec2 tc = DrawTexCoord * 10.0;
 
   vec3 AO = texture(tex0, tc).rgb;
   vec3 Diff = texture(tex1, tc).rgb;

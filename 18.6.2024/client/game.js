@@ -33,6 +33,8 @@ let defMaterial;
 let interStart;
 let inter;
 
+let isLeaderboard = false;
+
 function playerAdd(msg, pos) {
   
   let player;
@@ -164,28 +166,42 @@ function initializeCommunication() {
       }
     } else if (msg.type == "bulletAdd") {
       bulletAdd(msg);
+    } else if (msg.type == "leaderboard") {
+      let txt = "";
+      for (let i of msg.leaders) {
+        txt += i.name + ": Kills: " + i.kills + "; Deads: " + i.deads + ";<br/>";
+      }
+
+      $("#leaders").fadeIn("slow");
+      $("#leaders").html(txt);
+      isLeaderboard = true;
     }
   };
 }
 
 function main() {
   initializeCommunication();
+
+  let isClicked = false;
   const draw = () => {
-    
-    // for (let p of players) {
-    //   p.intervalStart = interStart;
-    //   p.interval = inter;
-    // }
+    if (myAnim.input.keysClick["KeyL"]) {
+      if (!isClicked) {
+        if (!isLeaderboard)
+          socket.send(JSON.stringify({
+            type:"getLeaders"
+          }));
+        else {
+          isLeaderboard = false;
+          $("#leaders").fadeOut("slow");
+        }
+      }
+      isClicked = true;
+    } else isClicked = false;
 
     myAnim.unitsResponse();
 
     // drawing
     myAnim.frameStart();
-
-    // myAnim.rnd.mainCam.set(pos.addVec(vec3(0, 0, 5)), pos, vec3(0, 1, 0));    
-    //myAnim.rnd.mainCam.set(CamLoc, pos, vec3(0, 1, 0));    
-
-
 
     myAnim.unitsRender();
     window.requestAnimationFrame(draw);
@@ -212,7 +228,7 @@ function main() {
   myAnim.unitAdd(unitFloor(myAnim.rnd));
   $("#died_field").fadeOut(0);
   $("#reload").fadeOut(0);
-  
+  $("#leaders").fadeOut(0);
   draw();
 }
 

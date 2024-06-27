@@ -18,6 +18,10 @@ let players = [];
 let validNames = [];
 let bullets = [];
 
+let leaders = {};
+let lastLeaderboardUpdate = -1; 
+
+
 const interval = 50;
 async function main() {
   const url = "mongodb+srv://doadmin:x62jNC54Pi1W3t98@db-mongodb-pml30-2024-12312526.mongo.ondigitalocean.com/admin?tls=true&authSource=admin";
@@ -40,6 +44,12 @@ async function main() {
           let newName = msg.newName;
           
           let poses = [];
+
+          const date = new Date();
+          let t =
+            date.getMinutes() * 60 +
+            date.getSeconds() +
+            date.getMilliseconds() / 1000;
 
           for (let p of validNames){
             if (players[p] != undefined)
@@ -90,6 +100,7 @@ async function main() {
             isChanged:false,
             deadTime:-3,
             health:3,
+            startTime:t,
           };
 
           validNames.push(newName);
@@ -99,7 +110,55 @@ async function main() {
           
         }
       } else if (msg.type == "move") {
-        players[msg.name].pos = players[msg.name].pos.addVec(msg.move);
+        let newPos = players[msg.name].pos.addVec(msg.move);
+
+        if (newPos.x > 10)
+          newPos.x = 10;
+        if (newPos.x < -10)
+          newPos.x = -10;
+        if (newPos.y > 10)
+          newPos.y = 10;
+        if (newPos.y < -10)
+          newPos.y = -10;
+        players[msg.name].pos = newPos;
+      } else if (msg.type == "getLeaders") {
+        const date = new Date();
+        let t =
+          date.getMinutes() * 60 +
+          date.getSeconds() +
+          date.getMilliseconds() / 1000;
+
+        if (t - lastLeaderboardUpdate < 1) {
+          ws.send(JSON.stringify({
+            type:"leaderboard",
+            leaders:leaders,
+          }));
+          return;
+        }
+
+        leaders = [];
+        for (let n of validNames) {
+          if (players[n] != undefined) {
+            leaders.push({
+              name:n,
+              kills:players[n].kills,
+              deads:players[n].deads,
+              time:players[n].startTime,
+            });
+          }
+        }
+
+        leaders.sort((a, b) => {
+          return (b.kills - b.deads) - (a.kills - a.deads);
+        });
+
+        leaders = leaders.slice(0, 10);
+
+        ws.send(JSON.stringify({
+          type:"leaderboard",
+          leaders:leaders,
+        }));
+        lastLeaderboardUpdate = t;
       } else if (msg.type == "bulletAdd") {
         bullets.push({
           startPos:vec3(msg.pos),
@@ -131,7 +190,7 @@ async function main() {
       };
 
       let idx = validNames.indexOf(ws.name);
-      validNames.slice(idx, 1);
+      validNames.splice(idx, 1);
 
       collection.replaceOne(
         {
@@ -159,6 +218,20 @@ async function main() {
 
     let startInd = 0;
 
+    let collis = [[]];
+
+    for (let p of validNames){
+      if (players[p] != undefined) {
+        let yy = Math.trunc(players[p].pos.y);
+        let xx = Math.trunc(players[p].pos.x);
+        if (collis[yy] == undefined)
+          collis[yy] = [];
+        if (collis[yy][xx] == undefined)
+          collis[yy][xx] = [];
+        collis[yy][xx].push(players[p]);
+      }
+    };
+
     for (let b in bullets) {
       if (bullets[b]) {
         bullets[b].pos = vec3(bullets[b].pos).addVec(vec3(bullets[b].dir).mulNum(interval / 1000 * 10));
@@ -166,7 +239,39 @@ async function main() {
         if (len > 20)
           bullets[b] = null;    
         else {
+          let xx = Math.trunc(bullets[b].pos.x);
+          let yy = Math.trunc(bullets[b].pos.y);
+          if (collis[yy] == undefined)
+            continue;
+          if (collis[yy][xx] == undefined || collis[yy][xx] == [])
+            continue;
 
+          for (let i in collis[yy][xx]) {
+            let curPlayer = collis[yy][xx][i];
+            if (curPlayer.name != bullets[b].name) {
+              let d2 = bullets[b].pos.subVec(curPlayer.pos).len2();
+
+              if (d2 < 0.47 * 0.47 / 2) {
+                if (-curPlayer.deadTime + t > 6 && t - players[bullets[b].name].deadTime > 6) {
+                  curPlayer.health -= 1;
+                  players[bullets[b].name].isDamaged = true;
+
+                  if (curPlayer.health <= 0) {
+                    curPlayer.health = 3;
+                    curPlayer.deads += 1;
+                    curPlayer.isDead = true;
+                    curPlayer.pos = vec3(0);
+                    players[bullets[b].name].kills += 1;
+                    players[bullets[b].name].isKill = true;
+                    curPlayer.deadTime = t;
+                  }
+                }
+                bullets[b] = null;
+                break;
+              }
+            }
+          }
+          /*
           for (let n of validNames) {
             if (players[n] != undefined && players[n].name != bullets[b].name) {
               let d2 = bullets[b].pos.subVec(players[n].pos).len2();
@@ -190,7 +295,7 @@ async function main() {
                 break;
               }
             }
-          }
+          }*/
         }
       }
     }

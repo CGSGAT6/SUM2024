@@ -58,7 +58,7 @@ export class input {
      "KeyA",
      "Numpad0", "NumpadMultiply",
      "F1",
-     "KeyQ", "KeyE",
+     "KeyQ", "KeyE", "KeyL",
    ].forEach(key => {
      this.keys[key] = 0;
      this.keysOld[key] = 0;
