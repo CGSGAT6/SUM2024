@@ -14,6 +14,7 @@ uniform PrimUBO
   mat4 MatrVP;
   mat4 MatrWVP;
   mat4 MatrWInv;
+  mat4 MatrView;
 };
 
 out vec3 DrawNormal;

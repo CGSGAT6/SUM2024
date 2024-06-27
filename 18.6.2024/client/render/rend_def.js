@@ -68,7 +68,7 @@ class _renderObject {
     //this.gl.clearColor(0.30, 0.47, 0.8, 1);
     this.gl.clearColor(19 / 255, 7 / 255, 54 / 255, 1);
 
-    this.primUBO = ubo_buffer(this, "PrimUBO", 16 * 4 * 4, primUBOBindingPoint);
+    this.primUBO = ubo_buffer(this, "PrimUBO", 16 * 4 * 5, primUBOBindingPoint);
     this.frameUBO = ubo_buffer(this, "FrameUBO", 80, frameUBOBindingPoint);
 
     this.defaultMaterialPattern = materialPattern("fst", "default", this);
@@ -137,7 +137,7 @@ class _renderObject {
     /*if (p.material.mtlPtn.shd.uniforms["Time"] != undefined)
       this.gl.uniform1f(p.material.mtlPtn.shd.uniforms["Time"].loc, this.timer.localTime);*/
 
-    let data = [].concat(mW.toArray(), this.mainCam.matrVP.toArray(), mWVP.toArray(), mWInv.toArray());
+    let data = [].concat(mW.toArray(), this.mainCam.matrVP.toArray(), mWVP.toArray(), mWInv.toArray(), this.mainCam.matrView.toArray());
     this.primUBO.update(new Float32Array(data));
     this.primUBO.apply(p.material.mtlPtn.shd);
     this.frameUBO.apply(p.material.mtlPtn.shd);

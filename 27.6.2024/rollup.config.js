@@ -2,15 +2,9 @@ import terser from '@rollup/plugin-terser';
 import resolve from "@rollup/plugin-node-resolve";
 
 export default {
-    input: "client/index.js",
+    input: "index.js",
     output: {
-        dir: "client/output",
-        format: "iife",
-        sourcemap: "inline"
-    },
-    input: "client/game.js",
-    output: {
-        dir: "client/output",
+        dir: "output",
         format: "iife",
         sourcemap: "inline"
     },

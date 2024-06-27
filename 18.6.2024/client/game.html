@@ -1,0 +1,39 @@
+<!DOCKTYPE html>
+<html lang="en" class="nontranslate" translate="no">
+  <head>
+    <title id="title"></title>
+    <meta charset="utf-8" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="./output/game.js" type="module"></script>
+    </head>
+  <body style="height: 100%; margin: 0;" id="bod">
+    <div id="died_field" style="font-size:10vw; position: absolute; top: 0%; left: 0%; width: 100%; height: 100%; background-color: black; color: #b80606; border: 3px; text-align: center; vertical-align: middle;">
+      <div style="position: relative; top: 30%;"><span style="vertical-align: baseline; ">YOU DIED!</span><br/>
+      <span style="vertical-align: baseline;" id="die_timer"></span></div>
+    </div>
+    <table id="stats" style="font-size: 1vw; position: absolute; top: 30px; left: 30px; background-color: rgb(22, 162, 167); color: #490e0e; border: 3px; border-color: aliceblue; width: 10%; max-width: 10%; ">
+      <tr id="health">
+        <td>HP</td>
+        <td>3</td>
+      </tr>
+      <tr id="kills">
+        <td>Kills</td>
+        <td>0</td>
+      </tr>
+      <tr id="deads">
+        <td>Deads</td>
+        <td>0</td>
+      </tr>
+      <tr id="ammo">
+        <td>Ammo</td>
+        <td>5</td>
+      </tr>
+      <tr>
+        <td colspan="2">
+          <div id="reload" style="background: none;">Ammo reloading...</div>
+        </td>
+      </tr>
+    </table>
+    <canvas id="can" style="width: 100%; height: 100%; display: block;"></canvas>
+  </body>
+</html>

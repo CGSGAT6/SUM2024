@@ -141,6 +141,7 @@ void main( void )
   float k = 5.0;
 
   vec3 Color = texture(tex0, DrawTexCoords).rgb;
+  bool IsShade = bool(texture(tex0, DrawTexCoords).a);
   vec3 Normal = texture(tex1, DrawTexCoords).rgb;
   vec3 Pos = texture(tex2, DrawTexCoords).rgb;
   vec3 MapKa = texture(tex3, DrawTexCoords).rgb;
@@ -150,8 +151,15 @@ void main( void )
   vec3 LP = vec3(sin(D2R(Time * 90.0)) * 4.0, cos(D2R(Time * 90.0)) * 4.0, 3.0);
   //vec3 LP = CamAt + vec3(0, 0, 5);
 
-  vec3 col = Shade(Pos, Normal, MapKa, MapKd, vec3(1, 0.47, 0.30), 47.0, vec3(1, 1, 1), -PsC);
-  col += sin(Normal) * cos(Normal) / 8.0;
+  vec3 col;
+
+  if (IsShade)
+  {
+    col = Shade(Pos, Normal, MapKa, MapKd, vec3(1, 0.47, 0.30), 47.0, vec3(1, 1, 1), -PsC);
+  }
+  else
+    col = Color;
+  
 
   OutColor = vec4(col, 1.0);
 }

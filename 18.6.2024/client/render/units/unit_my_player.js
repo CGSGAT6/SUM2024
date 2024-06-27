@@ -16,6 +16,8 @@ class _unitMyPlayer extends _unitPlayer {
   move = vec3(0);
   ammo = 5;
   isReload = false;
+  isRes = false;
+  oldHealth = 3;
 
   constructor(rnd, socket, id, playerName){
     super(rnd, id, playerName);
@@ -52,9 +54,13 @@ function unitInit() {
 
   this.oldM = vec3(0);
   this.statTable = document.getElementById("stats");
+  this.isRes = false;
+
+  $("#deads td").last().text(this.deads);
+  $("#kills td").last().text(this.kills);
 
   setInterval(() => {
-    if (this.move.x != 0 && this.move.y != 0)
+    if (this.move.x != 0 || this.move.y != 0)
       if (this.socket.readyState == 1)
         this.socket.send(
           JSON.stringify({
@@ -72,13 +78,40 @@ function unitInit() {
 function unitResponse() {
   
   if (this.isDead) {
-    this.oldPos = 0;
+    this.isRes = true; 
+    this.oldPos = vec3(0);
     this.ammo = 5;
+    $("#died_field").fadeIn("slow");
+    $("#die_timer").text("5");
+    $("#stats").hide(0);
+    let i = 5;
+    let id = setInterval(() => {
+      i--
+      $("#die_timer").text(i);
+    }, 1000);
+
+    setTimeout(() => {
+      $("#died_field").fadeOut("slow");
+      this.isRes = false;
+      clearInterval(id);
+      $("#stats").show(0);
+      this.health = 3;
+      $("#health td").last().text(this.health);  
+    }, 4000);
   }
-  if (this.isDead || this.isKill) {
-    this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr><tr><td>Ammo</td><td>${this.ammo}</td></tr>`;
+  if (this.isDead) {
+    $("#deads td").last().text(this.deads);
+  }
+  if (this.isKill) {  
+    $("#kills td").last().text(this.kills);
+  }
+  if (this.oldHealth != this.health) {
+    $("#health td").last().text(this.health);
   }
 
+  if (this.isRes) {
+    return;
+  }
 
   if (this.rnd.anim.input.keysClick["Space"]) {
     if (this.lastShot == false && this.ammo > 0)
@@ -93,9 +126,8 @@ function unitResponse() {
           })
         );
         this.lastShot = true;
-        this.ammo = this.ammo - 1;
-        console.log(this.ammo);
-        this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr><tr><td>Ammo</td><td>${this.ammo}</td></tr>`;
+        this.ammo--;
+        $("#ammo td").last().text(this.ammo);
       }
   } else {
     this.lastShot = false;
@@ -103,10 +135,19 @@ function unitResponse() {
 
   if (this.ammo <= 0 && !this.isReload) {
     this.isReload = true;
+    let i = 5;
+    $("#reload").fadeIn("fast");
+    $("#reload").text("Ammo reloading " + i);
+    let id = setInterval(() => {
+      i--;
+      $("#reload").text("Ammo reloading " + i);
+    }, 1000);
     setTimeout(() => {
       this.ammo = 5;
-      this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr><tr><td>Ammo</td><td>${this.ammo}</td></tr>`;
+      $("#ammo td").last().text(this.ammo);
       this.isReload = false;
+      $("#reload").fadeOut("fast");
+      clearInterval(id);
     }, 5000);
   }
 

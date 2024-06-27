@@ -1,3 +1,4 @@
+import { mat4 } from "./math/mat4";
 import { input } from "./render/input";
 import { renderObject } from "./render/rend_def";
 import { Timer } from "./render/timer";

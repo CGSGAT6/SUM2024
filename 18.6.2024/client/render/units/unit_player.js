@@ -2,7 +2,9 @@ import { mat4 } from "../../math/mat4";
 import { vec3 } from "../../math/vec3";
 import { Platon, planePrim } from "../res/figures";
 import { image } from "../res/image";
+import { materialPattern } from "../res/material_pattern";
 import { material } from "../res/materials";
+import { prim } from "../res/prim";
 import { texture } from "../res/textures";
 import { _unit } from "./units";
 
@@ -18,22 +20,24 @@ export class _unitPlayer extends _unit {
   testPlane;
 
   static myPlayerMaterial = null;
+  static hpBarMaterial = null;
   static enemyPlayerMaterial = null;
-  
+  static enemyPlayerMaterialPattern = null;
+  static hpBarPrim = null;  
 
   constructor(rnd, id, playerName) {
-    super(
-      "Player " + id.toString(),
-      unitInit,
-      unitResponse,
-      unitRender,
-      unitClose
-  );
-  this.rnd = rnd;
-  this.id = id;
-  this.playerName = playerName;
-  this.deads = 0;
-  this.kills = 0;
+      super(
+        "Player " + id.toString(),
+        unitInit,
+        unitResponse,
+        unitRender,
+        unitClose
+    );
+    this.rnd = rnd;
+    this.id = id;
+    this.playerName = playerName;
+    this.deads = 0;
+    this.kills = 0;
   }
 }
 

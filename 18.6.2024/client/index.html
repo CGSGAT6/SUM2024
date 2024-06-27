@@ -1,26 +1,24 @@
 <!DOCKTYPE html>
 <html lang="en" class="nontranslate" translate="no">
   <head>
-    <title id="title"></title>
+    <title>Test page</title>
     <meta charset="utf-8" />
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="./output/index.js" type="module"></script>
-    </head>
-  <body style="height: 100%; margin: 0;" id="bod">
-    <table id="stats" style="position: absolute; top: 30px; left: 30px;">
+    <script src="./index.js" type="module"></script>
+  </head>
+  <body>
+    <h1 style="color: blueviolet"><b>QuQu</b></h1>
+    <table>
       <tr>
-        <td>Kills</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td>Deads</td>
-        <td>0</td>
-      </tr>
-      <tr>
-        <td>Ammo</td>
-        <td>5</td>
+        <td>
+          <input
+            type="text"
+            class="name_field"
+            placeholder="ИМЯ ПОЛЬЗОВАТЕЛЯ"
+          />
+        </td>
+        <td><input type="button" class="user_btn" /></td>
       </tr>
     </table>
-    <canvas id="can" style="width: 100%; height: 100%; display: block;"></canvas>
   </body>
 </html>
