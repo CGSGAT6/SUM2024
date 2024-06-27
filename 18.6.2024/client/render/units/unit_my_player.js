@@ -13,6 +13,9 @@ class _unitMyPlayer extends _unitPlayer {
   oldM;  
   lastShot = 0;
   statTable;
+  move = vec3(0);
+  ammo = 5;
+  isReload = false;
 
   constructor(rnd, socket, id, playerName){
     super(rnd, id, playerName);
@@ -49,25 +52,62 @@ function unitInit() {
 
   this.oldM = vec3(0);
   this.statTable = document.getElementById("stats");
+
+  setInterval(() => {
+    if (this.move.x != 0 && this.move.y != 0)
+      if (this.socket.readyState == 1)
+        this.socket.send(
+          JSON.stringify({
+            id:this.id,
+            type:"move",
+            move:this.move,
+            name:this.playerName,
+          })
+        );  
+
+    this.move = vec3(0);
+  }, 5);
 }
 
 function unitResponse() {
+  
+  if (this.isDead) {
+    this.oldPos = 0;
+    this.ammo = 5;
+  }
+  if (this.isDead || this.isKill) {
+    this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr><tr><td>Ammo</td><td>${this.ammo}</td></tr>`;
+  }
+
+
   if (this.rnd.anim.input.keysClick["Space"]) {
-    if (this.lastShot == false)
+    if (this.lastShot == false && this.ammo > 0)
       if (this.socket.readyState == 1) {
         this.socket.send(
           JSON.stringify({
             id:this.id,
             type:"bulletAdd",
-            pos:this.curPos,
+            pos:this.curPos.addVec(this.dir),
             dir:this.dir,
             name:this.playerName,
           })
         );
         this.lastShot = true;
+        this.ammo = this.ammo - 1;
+        console.log(this.ammo);
+        this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr><tr><td>Ammo</td><td>${this.ammo}</td></tr>`;
       }
   } else {
     this.lastShot = false;
+  }
+
+  if (this.ammo <= 0 && !this.isReload) {
+    this.isReload = true;
+    setTimeout(() => {
+      this.ammo = 5;
+      this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr><tr><td>Ammo</td><td>${this.ammo}</td></tr>`;
+      this.isReload = false;
+    }, 5000);
   }
 
   /*
@@ -107,17 +147,17 @@ function unitResponse() {
   
   this.dir = this.dir.vectorTransform(mat4().rotateZ(angl));
 
-  this.move = this.dir.mulNum(df).addVec(vec3(-this.dir.y, this.dir.x, 0).mulNum(-db));
+  this.move = this.move.addVec(this.dir.mulNum(df).addVec(vec3(-this.dir.y, this.dir.x, 0).mulNum(-db)));
  
-    if (this.socket.readyState == 1)
-      this.socket.send(
-        JSON.stringify({
-          id:this.id,
-          type:"move",
-          move:this.move,
-          name:this.playerName,
-        })
-      );
+  // if (this.socket.readyState == 1)
+  //   this.socket.send(
+  //     JSON.stringify({
+  //       id:this.id,
+  //       type:"move",
+  //       move:this.move,
+  //       name:this.playerName,
+  //     })
+  //   );
 
 
   let d = (this.rnd.anim.timer.globalTime - this.intervalStart) * 1000 / this.interval;
@@ -128,15 +168,8 @@ function unitResponse() {
 
   //camLoc = this.curPos.addVec(vec3(0, 0, 5));
   this.rnd.mainCam.set(camLoc, this.curPos, this.dir);
-  this.rnd.updateFrameUBO();
+  // this.rnd.updateFrameUBO();
   //this.rnd.mainCam.set(vec3(0.30, 0.47, 0.8), this.curPos, this.dir);
-
-  if (this.isDead) {
-    this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr>`;
-  }
-  if (this.isKill) {
-    this.statTable.innerHTML = `<tr><td>Kills</td><td>${this.kills}</td></tr><tr><td>Deads</td><td>${this.deads}</td></tr>`;
-  }
 }
 
 function unitRender() {

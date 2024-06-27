@@ -58,6 +58,7 @@ wss.on("connection", async (ws) => {
     kills:0,
     deads:0,
     isChanged:false,
+    deadTime:-3,
   };
 
   validNames.push(newName);
@@ -104,6 +105,12 @@ wss.on("connection", async (ws) => {
 });
 
 setInterval(() => {
+  const date = new Date();
+  let t =
+    date.getMinutes() * 60 +
+    date.getSeconds() +
+    date.getMilliseconds() / 1000;
+
   let kills = [];
   let poses = [];
 
@@ -122,14 +129,14 @@ setInterval(() => {
             let d2 = bullets[b].pos.subVec(players[n].pos).len2();
 
             if (d2 < 0.47 * 0.47 / 2) {
-              console.log("HIT!!!");
-
-              players[n].deads += 1;
-              players[n].isDead = true;
-              players[n].pos = vec3(0);
-              players[bullets[b].name].kills += 1;
-              players[bullets[b].name].isKill = true;
-
+              if (-players[n].deadTime + t > 3) {
+                players[n].deads += 1;
+                players[n].isDead = true;
+                players[n].pos = vec3(0);
+                players[bullets[b].name].kills += 1;
+                players[bullets[b].name].isKill = true;
+                players[n].deadTime = t;
+              }
               // let msg = {
               //   type:"hit",
               //   victim:players[n].name,
